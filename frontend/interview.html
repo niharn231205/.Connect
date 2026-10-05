@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.Connect - Mock Interview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .prep-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            min-height: calc(100vh - 120px);
+        }
+
+        .company-selector {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .company-btn {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: var(--text-main);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .company-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .chat-bot-area {
+            display: none;
+            flex: 1;
+            background: var(--bg-card);
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bot-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-history {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .msg-bubble {
+            max-width: 80%;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            line-height: 1.5;
+        }
+
+        .msg-bot {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-bottom-left-radius: 0.2rem;
+            align-self: flex-start;
+        }
+
+        .msg-user {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-bottom-right-radius: 0.2rem;
+            align-self: flex-end;
+            color: var(--text-muted);
+        }
+
+        .feedback-bubble {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            font-size: 0.9rem;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: -1rem;
+            align-self: flex-start;
+            max-width: 70%;
+        }
+
+        .input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .input-area textarea {
+            flex: 1;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            resize: vertical;
+            min-height: 50px;
+            max-height: 200px;
+        }
+        
+        .input-area textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar details -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-network-wired"></i>
+            <span>.Connect</span>
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="connect.html">Connections</a>
+            <a href="chat.html">Messages</a>
+            <a href="jobs.html">Jobs</a>
+            <a href="interview.html" class="active">Interview Prep</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="profile.html">Profile</a>
+            <a href="#" onclick="logout()" class="btn btn-secondary" style="padding: 0.4rem 1rem; margin-left: 1rem; font-size: 0.85rem;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="prep-container">
+        
+        <div id="setupArea" class="company-selector">
+            <h2>Mock Interview AI</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Select a top-tier company to start a mock interview featuring previous year questions (PYQs).</p>
+            <div class="company-grid">
+                <button class="company-btn" data-company="Google">Google</button>
+                <button class="company-btn" data-company="Amazon">Amazon</button>
+                <button class="company-btn" data-company="Microsoft">Microsoft</button>
+                <button class="company-btn" data-company="Meta">Meta</button>
+                <button class="company-btn" data-company="Apple">Apple</button>
+                <button class="company-btn" data-company="Netflix">Netflix</button>
+            </div>
+            <div style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 2rem;">
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Want to study all 50 questions offline?</p>
+                <button id="downloadPdfBtn" style="background: var(--bg-card); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 0.8rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-file-pdf"></i> Download PYQs PDF
+                </button>
+            </div>
+        </div>
+
+        <div id="chatArea" class="chat-bot-area" style="display: none;">
+            <div class="bot-header">
+                <h3 style="margin:0"><i class="fas fa-robot"></i> Interviewer (<span id="companyLabel"></span>)</h3>
+                <span id="progressLabel" style="font-size: 0.9rem; color: var(--text-muted)">Q 1 of 5</span>
+            </div>
+            
+            <div class="chat-history" id="chatHistory">
+                <!-- Chat bubbles go here -->
+            </div>
+
+            <div class="input-area">
+                <textarea id="answerInput" placeholder="Type your answer here... Explain your logic and write pseudo-code if needed."></textarea>
+                <button id="submitAnswerBtn" class="submit-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Career Readiness Report Modal -->
+    <div id="reportModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div class="glass-card" style="max-width: 600px; width: 90%; text-align: center; border-color: var(--accent); padding: 3rem;">
+            <div style="margin-bottom: 2rem;">
+                <i class="fas fa-award" style="font-size: 4rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Interview Complete!</h2>
+                <p>Digital proof of your industry readiness.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; text-align: left;">
+                <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <p style="font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">Overall Score</p>
+                    <div id="report-score" style="font-size: 2.5rem; font-weight: 800; color: var(--accent);">0%</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <p style="font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">Professional Status</p>
+                    <div id="report-status" style="font-size: 1.1rem; font-weight: 700; color: var(--success); margin-top: 0.5rem;">Match-Ready</div>
+                </div>
+            </div>
+
+            <div style="text-align: left; margin-bottom: 2.5rem;">
+                <h4 style="margin-bottom: 1rem; color: var(--accent);">AI Growth Insights</h4>
+                <div id="report-insights" style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary);">
+                    Your technical depth and clarity have been analyzed. View your detailed breakdown on the dashboard.
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="window.location.href='/dashboard.html'" class="btn btn-primary" style="flex: 1;">Explore Growth Dashboard</button>
+                <button onclick="window.location.reload()" class="btn btn-secondary" style="flex: 1;">Next Company</button>
+            </div>
+        </div>
+    </div>
+
+    <footer style="border-top: 1px solid var(--glass-border); padding: 5rem 0; background: var(--nav-bg); margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;">
+            <div>
+                <a href="/" class="logo">.<span>Connect</span>.</a>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem;">The high-performance platform for career growth, networking, and technical excellence.</p>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Platform</h4>
+                <a href="/jobs.html" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Job Board</a>
+                <a href="/interview.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Interview Prep</a>
+                <a href="/leaderboard.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Leaderboard</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Resources</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Resume Tips</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">AI Interview Guide</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Success Stories</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Company</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">About Us</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Privacy Policy</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Contact Support</a>
+            </div>
+        </div>
+        <div class="container" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; padding-top: 2rem;">
+            <p style="font-size: 0.8rem; color: var(--text-secondary); opacity: 0.5;">&copy; 2026 .Connect Platform Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/ui.js"></script>
+    <script src="js/interview.js"></script>
+</body>
+</html>

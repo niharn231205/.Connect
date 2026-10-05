@@ -1,0 +1,202 @@
+[
+  {
+    "question": "Longest substring without repeating characters",
+    "answer": "To find the longest substring without repeating characters, we use a sliding window approach with two pointers (left and right). We also maintain a Hash Map to store the last seen index of each character. As we expand the right pointer, if we encounter a character already in the map, we move the left pointer to max(left, lastSeenIndex + 1). The answer is the maximum value of (right - left + 1) found during the process. Time complexity is O(n), and Space complexity is O(min(m, n)) where m is the character set size."
+  },
+  {
+    "question": "Maximum subarray sum (Kadane’s algorithm)",
+    "answer": "Kadane's algorithm finds the maximum subarray sum in O(n) time. It iterates through the array, maintaining a 'currentSum' that adds the current element. If 'currentSum' becomes negative, it resets to zero because a negative sum would only decrease the potential total of subsequent elements. We track the 'maxGlobal' sum found so far. It's a classic dynamic programming example where we only care about the best local sum ending at the current index."
+  },
+  {
+    "question": "Design a URL shortener like TinyURL",
+    "answer": "A URL shortener requires a mapping between long URLs and short 7-8 character keys. We can use Base62 encoding (a-z, A-Z, 0-9) to convert an auto-incrementing ID in a database (like SQL or NoSQL) into a string. Key components include an API for generation, a redirection service, a database for storage, and a caching layer (Redis) for fast lookups of popular URLs. Handling billions of records requires horizontal partitioning/sharding by the hashed short-key."
+  },
+  {
+    "question": "Detect cycle in a linked list",
+    "answer": "Detected using Floyd's Cycle-Finding Algorithm (Hare and Tortoise). We use two pointers: a slow pointer moving one step at a time and a fast pointer moving two steps. If there is a cycle, the fast pointer will eventually catch up and equal the slow pointer. If the fast pointer reaches null, there is no cycle. Complexity: O(n) time and O(1) space."
+  },
+  {
+    "question": "Scale a search engine to billions of queries",
+    "answer": "Scaling a search engine involves: 1) Distributed Inverted Indexing (splitting index across many machines), 2) Query sharding to parallelize search, 3) Multiple levels of Caching (results, partial results), 4) Load Balancing using consistent hashing, and 5) Content Delivery Networks (CDNs) for static assets. Using a microservices architecture for ranking, crawling, and serving is also essential."
+  },
+  {
+    "question": "Reverse a linked list",
+    "answer": "Reversing a linked list involves iterating through the nodes and changing each node's 'next' pointer to point to its previous node. We maintain three pointers: 'prev' (null), 'current' (head), and 'nextTemp'. In each step, we store current.next, reassign current.next to prev, move prev to current, and current to nextTemp. Time: O(n), Space: O(1)."
+  },
+  {
+    "question": "Check if two strings are anagrams",
+    "answer": "Two strings are anagrams if they have the same characters with the same frequencies. Approach 1: Sort both strings and compare (O(n log n)). Approach 2 (Optimal): Use a frequency counter (hash map or fixed-size array of 26 integers) to count occurrences in string A and decrement them based on string B. If the counts are all zero at the end, they are anagrams. Time: O(n), Space: O(1) for fixed character sets."
+  },
+  {
+    "question": "Median of two sorted arrays",
+    "answer": "To find the median in O(log(min(m,n))), we use binary search on the smaller array to find a partition point such that all elements on the left side are less than or equal to all elements on the right side. We ensure the total number of elements on the left side is (m + n + 1) / 2. The median is then calculated based on the max of the left partitions and min of the right partitions."
+  },
+  {
+    "question": "Design a navigation system like Google Maps",
+    "answer": "System design involves: 1) Representation of the map as a Graph (nodes as intersections, edges as roads), 2) Dijkstra's or A* algorithm for shortest path calculation, 3) Tiled Map Rendering (pre-rendering map segments at different zoom levels), 4) Routing Service for traffic updates, and 5) Highly available distributed database for points of interest (POI)."
+  },
+  {
+    "question": "Compare quicksort vs mergesort time complexity",
+    "answer": "MergeSort: Guaranteed O(n log n) time complexity, stable, but O(n) space complexity due to auxiliary arrays. Good for linked lists. QuickSort: Average O(n log n) but worst-case O(n^2) (e.g., if pivot choice is poor on sorted data). It is unstable but performs 'in-place' with O(log n) space. QuickSort is often faster in practice due to better cache locality."
+  },
+  {
+    "question": "Find longest palindromic substring",
+    "answer": "Common approaches: 1) Dynamic Programming (O(n^2) time/space), 2) Expand Around Center (O(n^2) time, O(1) space), 3) Manacher's Algorithm (O(n) time/space). Expanding around center is popular: for each index, assume it's the center (both odd and even lengths) and expand outward as long as characters match."
+  },
+  {
+    "question": "Implement trie data structure",
+    "answer": "A Trie (Prefix Tree) stores characters of words as nodes. Each node contains a map or array of children (next characters) and a boolean 'isEndOfWord'. Important for fast prefix lookups (e.g., autocomplete). Root represents an empty string. Insertion and Search are O(W) where W is the word length."
+  },
+  {
+    "question": "Word ladder shortest transformation sequence",
+    "answer": "Solved using Breadth-First Search (BFS) because it's an unweighted graph problem (each transformation is a distance of 1). Each node is a word, and edges exist between words differing by exactly one character. Use a queue to explore levels and a 'visited' set to avoid cycles. O(N * L^2) complexity where N is word list size and L is word length."
+  },
+  {
+    "question": "Find k closest points to origin",
+    "answer": "Calculate Euclidean distance (x^2 + y^2) for all points. Approach 1: Sort points (O(N log N)). Approach 2 (Optimal): Use a Max-Heap of size K. Iterate through points; if distance is less than heap root, replace root. At the end, heap contains K closest points. Time: O(N log K)."
+  },
+  {
+    "question": "Design Google Docs collaboration system",
+    "answer": "Requires Operational Transformation (OT) or Conflict-free Replicated Data Types (CRDTs) to handle concurrent edits. Key components: WebSocket for real-time synchronization, a central server to sequence operations, a persistence layer (NoSQL/SQL), and a client-side buffer for local unacknowledged changes."
+  },
+  {
+    "question": "Implement autocomplete search",
+    "answer": "Best implemented using a Trie data structure. Each node stores the frequency or weight of words passing through it. To serve results quickly: 1) Search the prefix in the Trie, 2) Traverse its subtree for top-k results, or pre-calculate top results at each node. For scale, use distributed caching and suggest common queries."
+  },
+  {
+    "question": "Top K frequent elements",
+    "answer": "1) Count frequencies using a Hash Map (O(N)). 2) To find top K: either use a Min-Heap of size K (O(N log K)) or use QuickSelect algorithm (average O(N)). Bucket Sort approach also works in O(N) if the frequencies have a limited range."
+  },
+  {
+    "question": "Binary tree level order traversal",
+    "answer": "Uses Breadth-First Search (BFS). Initialize a Queue with the root. While queue is not empty, process all nodes at the current level (size of queue), add their children to the queue, and move to the next level. Time: O(N), Space: O(W) where W is max width."
+  },
+  {
+    "question": "Serialize and deserialize binary tree",
+    "answer": "Serialization: Convert tree to a string (e.g., pre-order traversal with '#' for null nodes). Deserialization: Reconstruct using the string. Use a recursive approach for pre-order: consume string tokens one by one, creating root, then recursively creating left and right subtrees."
+  },
+  {
+    "question": "Design distributed cache",
+    "answer": "Key concepts: 1) Consistent Hashing to distribute keys across cache nodes, 2) Replication for high availability, 3) Eviction policies (LRU/LFU), 4) Write-through vs Write-back strategies, 5) Gossip protocol for node discovery, and 6) Client-side library with local caching."
+  },
+  {
+    "question": "Implement LFU cache",
+    "answer": "Least Frequently Used (LFU) requires tracking access counts. Data structures: A Hash Map (key -> node) for O(1) access, and a frequency map (count -> Doubly Linked List of nodes). When capacity is full, remove the head of the list with the minimum frequency. Update logic handles promoting nodes to higher frequency lists."
+  },
+  {
+    "question": "Minimum window substring",
+    "answer": "Sliding window with two pointers. Maintain a frequency map of characters in 'target' and a current window map. Expand right until all target characters are satisfied. Then contract left as much as possible while maintaining the satisfaction. Record the smallest valid window. Time: O(N + M)."
+  },
+  {
+    "question": "Find duplicate number in array",
+    "answer": "If the array has N+1 integers between 1 and N, at least one duplicate exists (Pigeonhole principle). Optimal: Floyd's Tortoise and Hare (Cycle Detection). Treat the array as a linked list where value at index i points to index 'array[i]'. The entrance to the cycle is the duplicate value. O(N) time, O(1) space."
+  },
+  {
+    "question": "Implement LRU cache",
+    "answer": "Least Recently Used (LRU) implemented using a Hash Map for O(1) access paired with a Doubly Linked List to maintain order. 'Get' moves the accessed node to the front. 'Put' adds to the front; if over capacity, removes the tail (least recently used). Both O(1) time."
+  },
+  {
+    "question": "Design YouTube recommendation system",
+    "answer": "High-level: 1) Candidate Generation (retrieving hundreds of likely videos from millions using collaborative filtering), 2) Ranking (sorting candidates using a Deep Neural Network considering user history, video popularity, and fresh content), and 3) Post-processing (removing duplicates or offensive content)."
+  },
+  {
+    "question": "Graph shortest path (Dijkstra)",
+    "answer": "Used for weighted graphs with non-negative weights. Maintain a 'min distance' map and a Priority Queue of (distance, node). Start with source distance 0. Repeatedly extract the node with min distance, update its neighbors' distances if a shorter path is found via current node, and push to queue. Complexity: O(E log V)."
+  },
+  {
+    "question": "Design Google Drive storage system",
+    "answer": "Components: 1) Metadata DB (NoSQL) for file versions/info, 2) Block Servers (splitting files into chunks), 3) Object Storage (Amazon S3/OpenStack Swift) for chunks, 4) Load Balancers, 5) Notification servers (WebSockets) for sync, and 6) Cache (Redis) for frequently accessed metadata."
+  },
+  {
+    "question": "Reverse nodes in k-group",
+    "answer": "A hard recursive/iterative linked list problem. Check if at least K nodes exist. If so, reverse the K nodes. Recursively call for the rest of the list and attach the result to the end of the newly reversed K nodes. Otherwise, return the head as is. O(N) time, O(N/K) recursion stack or O(1) iterative space."
+  },
+  {
+    "question": "Count number of islands",
+    "answer": "Grid problem solved with DFS/BFS. Traverse the grid; for every '1' encountered, increment count and trigger a DFS to mark all connected '1's as '0' (visited). Time: O(rows * cols), Space: O(rows * cols) for recursion stack."
+  },
+  {
+    "question": "Design rate limiter",
+    "answer": "Common algorithms: 1) Token Bucket (most popular), 2) Leaky Bucket, 3) Fixed Window Counter, 4) Sliding Window Log, 5) Sliding Window Counter. Implementation often uses Redis for distributed coordination (counting attempts per user_id/IP within a time window)."
+  },
+  {
+    "question": "Balanced parentheses validation",
+    "answer": "Use a Stack. Iterate characters; push open brackets to the stack. For a closing bracket, check if it matches the bracket currently at the top of the stack. If not or stack is empty, it's invalid. Valid if stack is empty at the end. Time: O(N), Space: O(N)."
+  },
+  {
+    "question": "Merge k sorted lists",
+    "answer": "Efficient approach: Use a Min-Heap. Push the head of each of the K lists into the heap. Extract the min, attach to result, and if that node had a next node, push that next node into the heap. Repeat until heap is empty. Time: O(N log K) where N is total nodes."
+  },
+  {
+    "question": "Design online code judge system",
+    "answer": "Architecture: 1) API Server (receives code), 2) Task Queue (RabbitMQ), 3) Worker Nodes (running in Docker containers for security/isolation), 4) Sandboxed execution to prevent malicious code, 5) Comparison engine (checking output against expected). 6) Database for user records and problems."
+  },
+  {
+    "question": "Find kth smallest element in BST",
+    "answer": "The In-order traversal of a Binary Search Tree (BST) produces a sorted list of elements. Perform an in-order traversal (Left, Root, Right) and keep a counter. When counter reaches K, current node is the answer. O(H + K) time where H is height."
+  },
+  {
+    "question": "Course schedule (topological sort)",
+    "answer": "Represent courses as a Directed Acyclic Graph (edgess: prerequisite -> course). Use Kahn's Algorithm (BFS with indegrees): start with courses having indegree 0. Add to queue, process, decrement indegrees of neighbors. If we process all courses, it's possible; otherwise, there's a cycle. O(V + E)."
+  },
+  {
+    "question": "Design Google Photos system",
+    "answer": "Similar to file storage but with heavy image processing. High-level: 1) Blob Storage for raw photos, 2) Metadata storage for tags/location, 3) Async workers for generating thumbnails/metadata, 4) Search service (indexing captions/AI tags), and 5) Efficient CDN delivery."
+  },
+  {
+    "question": "Implement min stack",
+    "answer": "A stack that supports getMin() in O(1). Use two stacks: one for actual data and another to store the 'current minimum' at each level. When pushing X, push X to data stack and push min(X, minStack.top()) to min stack. Pops occur from both."
+  },
+  {
+    "question": "Find majority element",
+    "answer": "Boyer-Moore Voting Algorithm: Initialize candidate = null and count = 0. Iterate through array; if count is 0, set candidate to current element. If current == candidate, increment count; else decrement count. The candidate at the end is the majority element. O(N) time, O(1) space."
+  },
+  {
+    "question": "Sliding window maximum",
+    "answer": "Use a Deque (Double-ended queue) to store indices of potential maxima. For each new element: 1) Remove indices of elements smaller than current from back, 2) Add current index to back, 3) Remove indices outside current window from front. Front of Deque is the max index for the window. O(N) time."
+  },
+  {
+    "question": "Design distributed logging system",
+    "answer": "Architecture: 1) Log Collectors (agents on app servers), 2) Central Buffer (Kafka), 3) Indexers (Logstash / custom workers), 4) Storage/Search (Elasticsearch), 5) Visualization (Kibana). Needs to be low latency and strictly ordered."
+  },
+  {
+    "question": "Check if binary tree is balanced",
+    "answer": "A tree is height-balanced if the left and right subtrees of every node differ in height by no more than 1. Recursive approach: a function returns the height if balanced, or -1 if not. For each node, check if subtrees are balanced and their height difference <= 1. O(N) time."
+  },
+  {
+    "question": "Search in rotated sorted array",
+    "answer": "Modified Binary Search. In every step, at least one half (left or right) is sorted. Determine which half is sorted. If target lies within the sorted range, search there; otherwise, search the other half. O(log N) time."
+  },
+  {
+    "question": "Implement priority queue",
+    "answer": "Usually implemented as a Binary Heap (array-based). Min-Heap: parent index 'i' has children at '2i+1' and '2i+2'. Core operations: 'Heapify-up' on insertion and 'Heapify-down' during deletion (extracting root) to maintain heap property. Time: O(log N) for both."
+  },
+  {
+    "question": "Design search autocomplete ranking",
+    "answer": "Involves: 1) Data collection (logging search queries), 2) MapReduce jobs to count frequencies, 3) Building a Trie with top K suggestions per node, 4) Real-time updates for trending topics, 5) Personalization based on user profile/history."
+  },
+  {
+    "question": "Longest increasing subsequence",
+    "answer": "Approach 1: Dynamic Programming O(N^2). dp[i] = max length ending at i. Approach 2: Binary Search O(N log N). Maintain a sorted list of current smallest possible tails for increasing subsequences of various lengths. Iterate through array and update/extend this list."
+  },
+  {
+    "question": "Find median in data stream",
+    "answer": "Use two Heaps: a Max-Heap for the lower half of data and a Min-Heap for the upper half. Maintain balance such that sizes differ by at most 1. Median is either the root of the larger heap or average of both roots. Time: O(log N) per insertion."
+  },
+  {
+    "question": "Design chat system",
+    "answer": "Architecture: 1) WebSockets for real-time delivery, 2) Message microservice, 3) Presence service (online/offline status), 4) Push notification service, 5) NoSQL (Cassandra/MongoDB) for horizontally scalable message history storage."
+  },
+  {
+    "question": "Evaluate reverse polish notation",
+    "answer": "Use a Stack. Iterate through tokens; if number, push to stack. If operator, pop two operands, apply the operator, and push the result back. At the end, the stack contains the final result. O(N) time/space."
+  },
+  {
+    "question": "Graph clone problem",
+    "answer": "Solved using DFS or BFS. Use a Hash Map (original node -> cloned node) to avoid redundant clones and handle cycles. For each visited node, create a clone, add to map, and then recursively (DFS) or iteratively (BFS) clone all its neighbors. O(V + E)."
+  },
+  {
+    "question": "Design scalable notification system",
+    "answer": "Architecture: 1) Notification service API, 2) Message Queues (one per provider like Email, SMS, Push), 3) Workers to send notifications, 4) Rate limiting to avoid being blacklisted by providers, 5) Template service, and 6) Logging/Tracking service for delivery status."
+  }
+]

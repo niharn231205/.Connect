@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - .Connect</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+        .profile-info h1 { margin-bottom: 0.25rem; }
+        .label-pill {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            background: var(--accent);
+            color: #000;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        .info-section {
+            margin-bottom: 2rem;
+        }
+        .info-section h3 {
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .resume-preview {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/dashboard.html" class="logo">.<span>Connect</span>.</a>
+        <div class="nav-links">
+            <a href="/dashboard.html">Dashboard</a>
+            <a href="/connect.html">Connections</a>
+            <a href="/chat.html">Messages</a>
+            <a href="/jobs.html">Jobs</a>
+            <a href="/interview.html">Interview Prep</a>
+            <a href="/leaderboard.html">Leaderboard</a>
+            <a href="/profile.html">Profile</a>
+            <a href="#" onclick="logout()" class="btn btn-secondary" style="padding: 0.4rem 1rem; margin-left: 1rem; font-size: 0.85rem;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container animate-fade">
+        <header class="profile-header">
+            <div class="profile-avatar" id="profile-initials">?</div>
+            <div class="profile-info">
+                <h1 id="profile-name">Loading...</h1>
+                <p id="profile-email">---</p>
+                <div id="profile-label" class="label-pill">Not Set</div>
+            </div>
+        </header>
+
+        <div class="info-grid">
+            <div class="main-info">
+                <div class="glass-card info-section">
+                    <h3>About & Goals</h3>
+                    <p><strong>Career Goals:</strong> <span id="profile-goals">---</span></p>
+                    <p><strong>Work Preference:</strong> <span id="profile-work">---</span></p>
+                    <p><strong>Interests:</strong></p>
+                    <div id="profile-interests" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <!-- Tags will go here -->
+                    </div>
+                </div>
+
+                <div class="glass-card info-section">
+                    <h3>Professional Skills & Endorsements</h3>
+                    <p style="font-size: 0.85rem; margin-bottom: 1.5rem;">Verified skills recognized by your professional tribe.</p>
+                    <div id="profile-skills-cloud" style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                        <!-- Skills will be rendered here -->
+                    </div>
+                </div>
+
+                <div class="glass-card info-section">
+                    <h3>Uploaded Resume</h3>
+                    <div id="resume-section" class="resume-preview">
+                        <p id="resume-status">No resume uploaded yet.</p>
+                        <a href="/resume.html" id="resume-link" class="btn btn-secondary" style="margin-top: 1rem; display: none;">View/Update Resume</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Section -->
+            <div style="margin-top: 3rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 style="margin: 0;">Portfolio & Projects</h2>
+                    <button id="addProjectBtn" style="background: none; border: 1px solid var(--primary-color); color: var(--primary-color); padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
+                        <i class="fas fa-plus"></i> Add Project
+                    </button>
+                </div>
+                <div id="portfolioGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+                    <!-- Javascript will populate portfolio items here -->
+                </div>
+
+                <!-- Add Project Modal -->
+                <div id="projectModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+                    <div style="background: var(--bg-card); padding: 2rem; border-radius: 1rem; width: 90%; max-width: 400px; border: 1px solid var(--border-color);">
+                        <h3 style="margin-top: 0">Add New Project</h3>
+                        <input type="text" id="projectTitle" placeholder="Project Title" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 0.5rem;">
+                        <textarea id="projectDesc" placeholder="Description" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 0.5rem; resize: vertical; min-height: 80px;"></textarea>
+                        <input type="url" id="projectLink" placeholder="Link (e.g. GitHub, Website)" style="width: 100%; padding: 0.8rem; margin-bottom: 1.5rem; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 0.5rem;">
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button id="cancelProjectBtn" style="padding: 0.8rem 1.5rem; border: none; background: transparent; color: var(--text-muted); cursor: pointer;">Cancel</button>
+                            <button id="saveProjectBtn" style="padding: 0.8rem 1.5rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer;">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skills-section">
+                <div class="glass-card info-section">
+                    <h3>Professional Stats</h3>
+                    <div style="text-align: center;">
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">ATS Score</p>
+                        <div class="stat-value" id="profile-ats">00</div>
+                        <p style="font-size: 0.9rem;" id="ats-vibe">Upload resume to analyze</p>
+                    </div>
+                </div>
+                
+                <div class="glass-card info-section">
+                    <h3>Identity</h3>
+                    <p><strong>Category:</strong> <span id="profile-category">---</span></p>
+                    <p><strong>Level:</strong> <span id="profile-level">---</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <footer style="border-top: 1px solid var(--glass-border); padding: 5rem 0; background: var(--nav-bg); margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;">
+            <div>
+                <a href="/" class="logo">.<span>Connect</span>.</a>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem;">The high-performance platform for career growth, networking, and technical excellence.</p>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Platform</h4>
+                <a href="/jobs.html" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Job Board</a>
+                <a href="/interview.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Interview Prep</a>
+                <a href="/leaderboard.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Leaderboard</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Resources</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Resume Tips</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">AI Interview Guide</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Success Stories</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Company</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">About Us</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Privacy Policy</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Contact Support</a>
+            </div>
+        </div>
+        <div class="container" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; padding-top: 2rem;">
+            <p style="font-size: 0.8rem; color: var(--text-secondary); opacity: 0.5;">&copy; 2026 .Connect Platform Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/profile.js"></script>
+</body>
+</html>

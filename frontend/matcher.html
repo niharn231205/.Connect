@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Matcher & Ranker - .Connect</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .matcher-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent);
+        }
+        .tab-btn:hover:not(.active) {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.02);
+        }
+        .matcher-section {
+            display: none;
+        }
+        .matcher-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .matching-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+        }
+        @media(max-width: 768px) {
+            .matching-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* Match Results Styles */
+        .circle-progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: rgba(255,255,255,0.01);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+        }
+        .score-circle {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) 0deg, rgba(255,255,255,0.05) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+        }
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 116px;
+            height: 116px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+        }
+        .score-text {
+            position: absolute;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .skill-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .skill-tag.matched {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .skill-tag.missing {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Leaderboard table styles */
+        .rankings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        .rankings-table th, .rankings-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .rankings-table th {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .rankings-table tr:hover td {
+            background: rgba(255,255,255,0.01);
+        }
+        .rank-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.85rem;
+        }
+        .rank-1 { background: gold; color: #000; }
+        .rank-2 { background: silver; color: #000; }
+        .rank-3 { background: #cd7f32; color: #000; }
+        .rank-other { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <a href="/dashboard.html" class="logo">.<span>Connect</span>.</a>
+        <div class="nav-links">
+            <a href="/dashboard.html">Dashboard</a>
+            <a href="/connect.html">Connections</a>
+            <a href="/chat.html">Messages</a>
+            <a href="/jobs.html">Jobs</a>
+            <a href="/interview.html">Interview Prep</a>
+            <a href="/leaderboard.html">Leaderboard</a>
+            <a href="/profile.html">Profile</a>
+            <a href="#" onclick="logout()" class="btn btn-secondary" style="padding: 0.4rem 1rem; margin-left: 1rem; font-size: 0.85rem;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container animate-fade">
+        <header style="margin-bottom: 2.5rem;">
+            <h1 style="margin-bottom: 0.5rem; font-size: 2.6rem;">AI Resume Matcher & Ranker</h1>
+            <p>Paste job descriptions or upload multiple resumes to perform real-time NLP similarity and skill gap analysis.</p>
+        </header>
+
+        <!-- Tabs -->
+        <div class="matcher-tabs">
+            <button class="tab-btn active" onclick="switchTab('single-match')"><i class="fas fa-arrows-left-right"></i> JD Matcher</button>
+            <button class="tab-btn" onclick="switchTab('multi-rank')"><i class="fas fa-list-ol"></i> Multiple Resume Ranker (Recruiters)</button>
+        </div>
+
+        <!-- Tab 1: Single JD Matcher -->
+        <div id="single-match" class="matcher-section active">
+            <div class="matching-grid">
+                <div class="glass-card">
+                    <h3><i class="fas fa-paste" style="color:var(--accent)"></i> Paste Job Description</h3>
+                    <p style="font-size:0.9rem; margin-bottom:1.5rem">Paste the contents of the job description below to compare against your uploaded resume.</p>
+                    
+                    <div id="single-error" class="error" style="display:none; margin-bottom:1rem"></div>
+                    
+                    <form id="single-match-form">
+                        <div class="form-group">
+                            <textarea id="jd-text" class="form-control" rows="10" placeholder="Paste requirements, duties, and skills here..." required style="resize: vertical; font-family: inherit; font-size: 0.95rem; line-height: 1.5;"></textarea>
+                        </div>
+                        <button type="submit" id="btn-match" class="btn btn-primary btn-block"><i class="fas fa-calculator"></i> Match My Resume</button>
+                    </form>
+                </div>
+
+                <div id="matching-results-box" class="glass-card" style="display:none;">
+                    <h3><i class="fas fa-square-poll-vertical" style="color:var(--accent)"></i> Analysis Result</h3>
+                    
+                    <div class="circle-progress-container" style="margin-top: 1.5rem; margin-bottom: 2rem;">
+                        <div class="score-circle" id="score-circle">
+                            <span class="score-text" id="score-text">0%</span>
+                        </div>
+                        <h4 id="match-rating" style="margin-bottom: 0.2rem; font-weight:700">Good Match</h4>
+                        <span id="match-label" style="font-size:0.8rem; color:var(--text-secondary)">Similarity Score</span>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="margin-bottom: 0.8rem; font-size: 1rem;"><i class="fas fa-circle-check" style="color: #10b981"></i> Matched Skills</h4>
+                        <div id="matched-skills-container">
+                            <span class="text-secondary" style="font-size: 0.9rem;">None detected</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="margin-bottom: 0.8rem; font-size: 1rem;"><i class="fas fa-triangle-exclamation" style="color: #ef4444"></i> Skill Gaps (Missing Skills)</h4>
+                        <div id="missing-skills-container">
+                            <span class="text-secondary" style="font-size: 0.9rem;">None detected</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="margin-bottom: 0.8rem; font-size: 1rem;"><i class="fas fa-tags" style="color: var(--accent)"></i> Top Keywords in JD</h4>
+                        <div id="jd-keywords-container" style="display:flex; flex-wrap:wrap; gap:0.5rem">
+                            <span class="text-secondary" style="font-size: 0.9rem;">None</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="matching-placeholder" class="glass-card" style="display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:4rem 2rem">
+                    <i class="fas fa-wand-magic-sparkles" style="font-size:3rem; color:var(--accent); opacity:0.3; margin-bottom:1.5rem"></i>
+                    <h4>Waiting for Job Description</h4>
+                    <p style="max-width:300px; font-size:0.85rem; margin-top:0.5rem">Paste the job description details on the left and click match to see the AI analysis details here.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Recruiter Multiple Resume Ranker -->
+        <div id="multi-rank" class="matcher-section">
+            <div class="glass-card">
+                <h3><i class="fas fa-ranking-star" style="color:var(--accent)"></i> Leaderboard Resume Ranker</h3>
+                <p style="font-size:0.9rem; margin-bottom:2rem">Upload multiple candidate resumes (PDF or DOCX) alongside a Job Description to rank them in order of relevance.</p>
+                
+                <div id="multi-error" class="error" style="display:none; margin-bottom:1rem"></div>
+                <div id="multi-success" class="success" style="display:none; margin-bottom:1rem"></div>
+
+                <form id="multi-rank-form">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <div>
+                            <div class="form-group">
+                                <label style="font-weight: 600;">1. Paste Job Description</label>
+                                <textarea id="multi-jd-text" class="form-control" rows="8" placeholder="Enter job requirements..." required style="resize: vertical; font-family: inherit; font-size: 0.9rem;"></textarea>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label style="font-weight: 600;">2. Select Candidate Resumes</label>
+                                <input type="file" id="resumes-files" class="form-control" accept=".pdf,.doc,.docx" multiple required style="padding: 2.2rem 1.5rem; border: 2px dashed var(--glass-border); background: rgba(255,255,255,0.01); text-align: center; height: auto;">
+                                <p style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.5rem">Select multiple files (Hold Ctrl key to select more than one).</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-rank" class="btn btn-primary" style="display:block; margin: 0 auto; width: 300px;"><i class="fas fa-crown"></i> Rank Candidates</button>
+                </form>
+
+                <!-- Ranking results leaderboard -->
+                <div id="leaderboard-results-box" style="display:none; margin-top: 3rem; border-top: 1px solid var(--glass-border); padding-top: 2rem;">
+                    <h3><i class="fas fa-trophy" style="color: gold"></i> Matching Leaderboard</h3>
+                    <table class="rankings-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Candidate Name</th>
+                                <th>Match Score</th>
+                                <th>Matched Skills</th>
+                                <th>Missing Skills</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="border-top: 1px solid var(--glass-border); padding: 5rem 0; background: var(--nav-bg); margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;">
+            <div>
+                <a href="/" class="logo">.<span>Connect</span>.</a>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem;">The high-performance platform for career growth, networking, and technical excellence.</p>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Platform</h4>
+                <a href="/jobs.html" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Job Board</a>
+                <a href="/interview.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Interview Prep</a>
+                <a href="/leaderboard.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Leaderboard</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Resources</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Resume Tips</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Company</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">About Us</a>
+            </div>
+        </div>
+        <div class="container" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; padding-top: 2rem;">
+            <p style="font-size: 0.8rem; color: var(--text-secondary); opacity: 0.5;">&copy; 2026 .Connect Platform Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/matcher.js"></script>
+</body>
+</html>

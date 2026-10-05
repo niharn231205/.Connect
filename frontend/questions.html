@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire - .Connect</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav>
+        <a href="/dashboard.html" class="logo">.<span>Connect</span>.</a>
+        <div class="nav-links">
+            <a href="/dashboard.html">Dashboard</a>
+            <a href="/leaderboard.html">Leaderboard</a>
+            <a href="/profile.html">Profile</a>
+            <a href="#" onclick="logout()" class="btn btn-secondary" style="padding: 0.4rem 1rem; margin-left: 1rem; font-size: 0.85rem;">Logout</a>
+        </div>
+    </nav>
+    <div class="container animate-fade">
+        <div class="center-content">
+            <div class="glass-card" style="max-width: 600px; width: 100%;">
+                <header style="margin-bottom: 2rem;">
+                    <h2 style="margin-bottom: 0.5rem; color: var(--accent);">Personalize Your Path</h2>
+                    <p>Help us tailor your experience by answering a few quick questions.</p>
+                </header>
+                
+                <div id="error-msg" class="error" style="margin-bottom: 1.5rem;"></div>
+
+                <form id="questions-form">
+                    <div class="form-group">
+                        <label>Professional Field</label>
+                        <select id="field" class="form-control" required style="appearance: none; background: rgba(255,255,255,0.03);">
+                            <option value="" disabled selected>Select your specialization</option>
+                            <option value="AIML">AI / Machine Learning</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="Cybersecurity">Cybersecurity</option>
+                            <option value="UI/UX Design">UI/UX Design</option>
+                            <option value="Cloud Computing">Cloud Computing</option>
+                            <option value="Product Management">Product Management</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Interests & Skills</label>
+                        <input type="text" id="interests" class="form-control" placeholder="e.g., AI, React, Product Strategy" required>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>Experience Level</label>
+                            <select id="experience" class="form-control" required style="appearance: none; background: rgba(255,255,255,0.03);">
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate" selected>Intermediate</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Work Preference</label>
+                            <select id="workType" class="form-control" required style="appearance: none; background: rgba(255,255,255,0.03);">
+                                <option value="Remote">Remote</option>
+                                <option value="On-site">On-site</option>
+                                <option value="Hybrid" selected>Hybrid</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Career Goals</label>
+                        <input type="text" id="careerGoals" class="form-control" required placeholder="What are you working towards?">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">Finish Setup &rightarrow;</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer style="border-top: 1px solid var(--glass-border); padding: 5rem 0; background: var(--nav-bg); margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;">
+            <div>
+                <a href="/" class="logo">.<span>Connect</span>.</a>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem;">The high-performance platform for career growth, networking, and technical excellence.</p>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Platform</h4>
+                <a href="/jobs.html" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Job Board</a>
+                <a href="/interview.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Interview Prep</a>
+                <a href="/leaderboard.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Leaderboard</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Resources</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Resume Tips</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">AI Interview Guide</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Success Stories</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Company</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">About Us</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Privacy Policy</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Contact Support</a>
+            </div>
+        </div>
+        <div class="container" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; padding-top: 2rem;">
+            <p style="font-size: 0.8rem; color: var(--text-secondary); opacity: 0.5;">&copy; 2026 .Connect Platform Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/questions.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.initCustomSelects) initCustomSelects();
+        });
+    </script>
+</body>
+</html>

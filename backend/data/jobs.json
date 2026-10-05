@@ -1,0 +1,43 @@
+[
+  {
+    "id": "j1",
+    "title": "Frontend React Developer",
+    "company": "TechNova",
+    "description": "Looking for an experienced React developer to build interactive UIs. Must know JavaScript, HTML, CSS, React, and Redux.",
+    "keywords": [
+      "react",
+      "javascript",
+      "html",
+      "css",
+      "redux"
+    ],
+    "type": "Full-Time"
+  },
+  {
+    "id": "j2",
+    "title": "Backend Node.js Engineer",
+    "company": "DataSync",
+    "description": "Node.js expert needed to scale our APIs. Skills: Node.js, Express, MongoDB, REST API.",
+    "keywords": [
+      "node.js",
+      "express",
+      "mongodb",
+      "rest api"
+    ],
+    "type": "Full-Time"
+  },
+  {
+    "id": "j3",
+    "title": "Data Scientist / ML Engineer",
+    "company": "CreativeFlow",
+    "description": "We are seeking a Machine Learning Engineer to design and deploy models. Required: Python, SQL, Machine Learning, TensorFlow, Pandas.",
+    "keywords": [
+      "python",
+      "sql",
+      "machine learning",
+      "tensorflow",
+      "pandas"
+    ],
+    "type": "Contract"
+  }
+]

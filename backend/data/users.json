@@ -1,0 +1,304 @@
+[
+  {
+    "id": "1785947912569uogf2ktxjhe",
+    "name": "Madhura ",
+    "email": "madhuranaringrekar@gmail.com",
+    "password": "$2b$10$s1ImCFmu2MUAeVpy0M28X.b2wLn86rFjuhWmGtCdhUS5qIFpvw8yK",
+    "answers": {
+      "field": "Data Science",
+      "interests": [
+        "start up"
+      ],
+      "experienceLevel": "Intermediate",
+      "workType": "Hybrid",
+      "careerGoals": "to earn money"
+    },
+    "label": "Data Science",
+    "category": "General",
+    "resume": {
+      "filename": "1785947961823-DL-Exp3-24.ipynb - Colab.pdf",
+      "path": "c:\\Users\\Pramod\\.gemini\\antigravity\\scratch\\.Connect\\backend\\uploads\\1785947961823-DL-Exp3-24.ipynb - Colab.pdf",
+      "extractedText": "Exp 3 : Implementation of a Multi-Layer Perceptron (MLP) using PyTorch\nBatch - 02 Roll No - 24 PID - 246060 Date - 28/07/2026\nSubject - Deep Learning LabName - Nihar Naringrekar \n!pip install torch\nRequirement already satisfied: torch in /usr/local/lib/python3.12/dist-packages (2.11.0+cpu)\nRequirement already satisfied: filelock in /usr/local/lib/python3.12/dist-packages (from torch) (3.29.7)\nRequirement already satisfied: typing-extensions>=4.10.0 in /usr/local/lib/python3.12/dist-packages (from torch) (4.16.0)\nRequirement already satisfied: setuptools<82 in /usr/local/lib/python3.12/dist-packages (from torch) (75.2.0)\nRequirement already satisfied: sympy>=1.13.3 in /usr/local/lib/python3.12/dist-packages (from torch) (1.14.0)\nRequirement already satisfied: networkx>=2.5.1 in /usr/local/lib/python3.12/dist-packages (from torch) (3.6.1)\nRequirement already satisfied: jinja2 in /usr/local/lib/python3.12/dist-packages (from torch) (3.1.6)\nRequirement already satisfied: fsspec>=0.8.5 in /usr/local/lib/python3.12/dist-packages (from torch) (2025.3.0)\nRequirement already satisfied: mpmath<1.4,>=1.1.0 in /usr/local/lib/python3.12/dist-packages (from sympy>=1.13.3->torch) (1.\nRequirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/dist-packages (from jinja2->torch) (3.0.3)\n!pip install scikit-learn\n!pip install matplotlib\nRequirement already satisfied: scikit-learn in /usr/local/lib/python3.12/dist-packages (1.6.1)\nRequirement already satisfied: numpy>=1.19.5 in /usr/local/lib/python3.12/dist-packages (from scikit-learn) (2.0.2)\nRequirement already satisfied: scipy>=1.6.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn) (1.16.3)\nRequirement already satisfied: joblib>=1.2.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn) (1.5.3)\nRequirement already satisfied: threadpoolctl>=3.1.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn) (3.6.0)\nRequirement already satisfied: matplotlib in /usr/local/lib/python3.12/dist-packages (3.10.0)\nRequirement already satisfied: contourpy>=1.0.1 in /usr/local/lib/python3.12/dist-packages (from matplotlib) (1.3.3)\nRequirement already satisfied: cycler>=0.10 in /usr/local/lib/python3.12/dist-packages (from matplotlib) (0.12.1)\nRequirement already satisfied: fonttools>=4.22.0 in /usr/local/lib/python3.12/dist-packages (from matplotlib) (4.63.0)\nRequirement already satisfied: kiwisolver>=1.3.1 in /usr/local/lib/python3.12/dist-packages (from matplotlib) (1.5.0)\nRequirement already satisfied: numpy>=1.23 in /usr/local/lib/python3.12/dist-packages (from matplotlib) (2.0.2)\nRequirement already satisfied: packaging>=20.0 in /usr/local/lib/python3.12/dist-packages (from matplotlib) (26.2)\nRequirement already satisfied: pillow>=8 in /usr/local/lib/python3.12/dist-packages (from matplotlib) (11.3.0)\nRequirement already satisfied: pyparsing>=2.3.1 in /usr/local/lib/python3.12/dist-packages (from matplotlib) (3.3.2)\nRequirement already satisfied: python-dateutil>=2.7 in /usr/local/lib/python3.12/dist-packages (from matplotlib) (2.9.0.post\nRequirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.7->matplotlib) (\nimport torch \nimport torch.nn as nn\nimport torch.optim as optim\nfrom sklearn.datasets import make_moons\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler \nfrom sklearn.metrics import accuracy_score\nX, y = make_moons(n_samples= 1000, noise= 0.2, random_state= 42)\nX_train, X_test, Y_train, Y_test = train_test_spli t(X, y, test_size= 0.2, random_state= 42)\nscaler = StandardScaler()\nX_train = scaler.fit_transform(X_train)\nX_test = scaler.transform(X_test)\nX_train = torch.tensor(X_train, dtype=torch.float3 2)\nY_train = torch.tensor(Y_train, dtype=torch.float3 2).view( -1, 1)\nX_test = torch.tensor(X_test, dtype=torch.float32)\nY_test = torch.tensor(Y_test, dtype=torch.float32) .view(-1, 1)\nepochs = 100\ndef train_with_lr (lr_value ):\n    model = nn.Sequential(\n        nn.Linear( 2, 32),\n        nn.ReLU(),\n        nn.Linear( 32, 1),\n        nn.Sigmoid()\n    )\n    criterion = nn.BCELoss()\n    optimizer = optim.Adam(model.parameters(), lr= lr_value)\n    for epoch in range(epochs):\n        model.train()7/28/26, 9:53 PM DL-Exp3-24.ipynb - Colab\nhttps://colab.research.google.com/drive/1uCgg1rfTiHwVeWSc_4h_3j4QzPKFUNz8#scrollTo=fFRUZIa5hE65&printMode=true 1/3\n        Y_pred = model(X_train)\n        loss = criterion(Y_pred, Y_train)\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n    with torch.no_grad():\n        model. eval()\n        output = model(X_test)\n        predicted = (output > 0.5).float()\n        accuracy = accuracy_score(Y_test.numpy(), predicted.numpy())\n    return accuracy\nlearning_rates = [ 0.0001,0.0005,0.0008,0.001,0.002,0.005,0.01,0.02,0.08,0.1]\nlr_accuracies = []\nfor rate in learning_rates:\n    # Using the renamed function 'train_with_lr'\n    accuracy = train_with_lr(rate)\n    lr_accuracies.append(accuracy)\n    print(f\"Learning Rate: {rate}, Accuracy: {accuracy :.4f}\")\nLearning Rate: 0.0001, Accuracy: 0.8150\nLearning Rate: 0.0005, Accuracy: 0.8050\nLearning Rate: 0.0008, Accuracy: 0.8200\nLearning Rate: 0.001, Accuracy: 0.7850\nLearning Rate: 0.002, Accuracy: 0.8700\nLearning Rate: 0.005, Accuracy: 0.9000\nLearning Rate: 0.01, Accuracy: 0.9350\nLearning Rate: 0.02, Accuracy: 0.9800\nLearning Rate: 0.08, Accuracy: 0.9900\nLearning Rate: 0.1, Accuracy: 0.9900\nimport matplotlib.pyplot as plt\nplt.figure (figsize= (8, 5))\nplt.plot (learning_rates, lr_accuracies, marker= 'o', linestyle= '-', color= 'b')\nplt.title ('Accuracy vs Learning Rate' )\nplt.xlabel ('Learning Rate' )\nplt.ylabel ('Test Accuracy' )\nplt.grid (True)\nplt.xticks (learning_rates )\nplt.show ()\nStart coding or generate  with AI.7/28/26, 9:53 PM DL-Exp3-24.ipynb - Colab\nhttps://colab.research.google.com/drive/1uCgg1rfTiHwVeWSc_4h_3j4QzPKFUNz8#scrollTo=fFRUZIa5hE65&printMode=true 2/3\n"
+    },
+    "atsScore": 50,
+    "skills": [
+      "deep learning",
+      "pytorch",
+      "scikit-learn",
+      "python",
+      "numpy"
+    ],
+    "suggestions": {
+      "missingSkills": [],
+      "formatting": "Formatting needs significant improvement to pass automated filters.",
+      "keywordsToAdd": [
+        "Add a detailed Work Experience section to list prior responsibilities.",
+        "Add an Education section outlining your academic background.",
+        "Ensure your email address and phone number are clearly visible."
+      ]
+    },
+    "keywords": [
+      {
+        "text": "requirement",
+        "value": 26
+      },
+      {
+        "text": "already",
+        "value": 26
+      },
+      {
+        "text": "satisfi",
+        "value": 26
+      },
+      {
+        "text": "usr",
+        "value": 26
+      },
+      {
+        "text": "local",
+        "value": 26
+      },
+      {
+        "text": "lib",
+        "value": 26
+      },
+      {
+        "text": "accuracy",
+        "value": 18
+      },
+      {
+        "text": "rate",
+        "value": 16
+      },
+      {
+        "text": "learn",
+        "value": 14
+      },
+      {
+        "text": "torch",
+        "value": 12
+      },
+      {
+        "text": "matplotlib",
+        "value": 12
+      },
+      {
+        "text": "import",
+        "value": 8
+      }
+    ],
+    "interviewHistory": [
+      {
+        "company": "Netflix",
+        "score": 31,
+        "date": "2026-08-15T11:08:19.922Z"
+      }
+    ],
+    "activityLog": [
+      {
+        "type": "interview",
+        "message": "Completed a Netflix mock interview with score 31/100",
+        "timestamp": "2026-08-15T11:08:19.926Z"
+      }
+    ]
+  },
+  {
+    "id": "1786797895056oosylosdhtk",
+    "name": "Nihar Naringrekar",
+    "email": "nihar@gmail.com",
+    "password": "$2b$10$LBIQ541D9wlUP3gzjsaAkOG.IyrZmMJTdGsG5bQC3C4Zp2bOMdHT6",
+    "answers": {
+      "field": "AIML",
+      "interests": [
+        "coding maths and stats"
+      ],
+      "experienceLevel": "Intermediate",
+      "workType": "On-site",
+      "careerGoals": "build smart systems, write clean code, and learn new AI tools"
+    },
+    "label": "AIML",
+    "category": "General",
+    "resume": {
+      "filename": "1786798201588-nihar.resume (1).docx",
+      "path": "C:\\Users\\Pramod\\.gemini\\antigravity\\scratch\\.Connect\\backend\\uploads\\1786798201588-nihar.resume (1).docx",
+      "extractedText": "NIHAR MAHESH NARINGREKAR\nMumbai, Maharashtra, India\n📧 niharn23122006@gmail.com | 📞 +91-9664071557\n🔗 LinkedIn: linkedin.com/in/nihar-naringrekar | GitHub: github.com/niharnaringrekar\n\nPROFESSIONAL SUMMARY\nSecond-year AIML Engineering student with hands-on experience in Machine Learning, Data Analysis, and Visualization. Proficient in Python-based ML frameworks with demonstrated ability to build data-driven solutions. Passionate about developing intelligent systems and solving real-world problems through AI/ML technologies. Seeking internship opportunities to apply and expand technical skills in production environments.\n\nEDUCATION\nBachelor of Engineering (B.E.) – Artificial Intelligence & Machine Learning\nSt. Francis Institute of Technology (SFIT), Mumbai University\nDuration: August 2024 – May 2028 \nCurrent Year: Second Year, Semester 4\nCGPA: 7.575/10.0\nRelevant Coursework:\nData Structures & Algorithms\nMachine Learning Fundamentals\nPython Programming\nProbability & Statistics\nDatabase Management Systems\nOperating Systems\n\nTECHNICAL SKILLS\nProgramming Languages\nPython (Primary), HTML, CSS, SQL (Basic)\n\n\n\nMachine Learning & Deep Learning\nSupervised Learning (Regression, Classification)\nUnsupervised Learning (Clustering, Dimensionality Reduction)\nModel Training, Evaluation & Hyperparameter Tuning\nScikit-learn, TensorFlow (Learning)\nData Analysis & Visualization\nPandas, NumPy, Matplotlib, Seaborn\nData Cleaning, Preprocessing & Feature Engineering\nStatistical Analysis & Exploratory Data Analysis (EDA)\nPower BI (Dashboard Creation & KPI Tracking)\nTools & Platforms\nGit & GitHub (Version Control)\nJupyter Notebook, Google Colab, VS Code\nMicrosoft Excel (Advanced Functions)\nUnity (Game Development)\nCore Competencies\nProblem Solving, Analytical Thinking, Team Collaboration, Quick Learner\n\nPROJECTS\nPortfolio Dashboard – Power BI\nDuration: October 2025 | Tools: Power BI, Excel\nDesigned an interactive business intelligence dashboard featuring 8+ dynamic visualizations for data-driven insights\nImplemented advanced DAX measures, slicers, and drill-through functionality enabling 50% faster decision-making\nCreated KPI cards tracking 5+ key metrics with conditional formatting and trend analysis\nApplied data modeling techniques connecting 3+ data sources with established relationships\n\n\n\n\nGame Development Project – Unity\nDuration: September - October 2025 | Tools: Unity, C#\nDeveloped a 2D interactive game implementing player controls, collision detection, and game physics\nDesigned game logic using C# scripts with object-oriented programming principles\nImplemented UI elements including scoring system, health bars, and game state management\nApplied problem-solving skills to debug 15+ issues and optimize game performance\nMachine Learning Exploration (Academic Project)\nDuration: January - March 2026 | Tools: Python, Scikit-learn, Pandas\nBuilt and compared 3+ supervised learning models (Linear Regression, Decision Trees, Random Forest) achieving X% accuracy (add if completed)\nPerformed end-to-end data preprocessing including handling missing values, outlier detection, and feature scaling\nConducted exploratory data analysis (EDA) on datasets with 1000+ samples using Matplotlib and Seaborn\nEvaluated model performance using metrics like accuracy, precision, recall, and F1-score\n\nWORKSHOPS & CERTIFICATIONS\nGame Development Workshop\nOrganized by ISTE, SFIT | Date: October 1, 2025\nGained hands-on experience with Unity engine and C# scripting\nLearned game design principles and interactive development concepts\nOnline Certifications (Add any relevant ones you've completed)\nPython for Data Science (Platform name)\nMachine Learning Fundamentals (Platform name)\nPower BI Data Analytics (Platform name)\n\n\n\nEXTRACURRICULAR ACTIVITIES\nActive member of ISTE Student Chapter, SFIT\nParticipated in college technical events and coding competitions\nSelf-directed learner pursuing additional courses in AI/ML domains\n\nADDITIONAL INFORMATION\nLanguages: English (Fluent), Hindi (Fluent), Marathi (Native)\nInterests: Artificial Intelligence, Data Science, Fitness & Nutrition, Continuous Learning\nAvailability: Seeking summer internship opportunities (May - July 2026)\n"
+    },
+    "atsScore": 100,
+    "skills": [
+      "html",
+      "deep learning",
+      "tensorflow",
+      "git",
+      "sql",
+      "css",
+      "pandas",
+      "communication",
+      "scikit-learn",
+      "numpy",
+      "python",
+      "machine learning"
+    ],
+    "suggestions": {
+      "missingSkills": [],
+      "formatting": "Excellent keyword density and professional structure.",
+      "keywordsToAdd": []
+    },
+    "keywords": [
+      {
+        "text": "learn",
+        "value": 13
+      },
+      {
+        "text": "data",
+        "value": 12
+      },
+      {
+        "text": "game",
+        "value": 9
+      },
+      {
+        "text": "machine",
+        "value": 6
+      },
+      {
+        "text": "analysi",
+        "value": 6
+      },
+      {
+        "text": "system",
+        "value": 4
+      },
+      {
+        "text": "duration",
+        "value": 4
+      },
+      {
+        "text": "python",
+        "value": 4
+      },
+      {
+        "text": "model",
+        "value": 4
+      },
+      {
+        "text": "power",
+        "value": 4
+      },
+      {
+        "text": "tool",
+        "value": 4
+      },
+      {
+        "text": "platform",
+        "value": 4
+      }
+    ],
+    "connections": [
+      {
+        "userId": "1786798315189yhthb0uc1mk",
+        "status": "accepted",
+        "direction": "received"
+      }
+    ]
+  },
+  {
+    "id": "1786798315189yhthb0uc1mk",
+    "name": "tanvi patill",
+    "email": "tanvi@gmail.com",
+    "password": "$2b$10$TA3DYTV5Iv8a/QMvusAbwuFdu9I0D/iMIrsg0sMzAWZGS5ccd79hW",
+    "answers": {
+      "field": "AIML",
+      "interests": [
+        "maths and stats"
+      ],
+      "experienceLevel": "Intermediate",
+      "workType": "Hybrid",
+      "careerGoals": "to build AI  models"
+    },
+    "label": "AIML",
+    "category": "General",
+    "resume": {
+      "filename": "1786798380130-DL_Exp-2_26_0_3.pdf",
+      "path": "C:\\Users\\Pramod\\.gemini\\antigravity\\scratch\\.Connect\\backend\\uploads\\1786798380130-DL_Exp-2_26_0_3.pdf",
+      "extractedText": "Name: T anvi P atil\nRoll no: 26\nSubject: DL\nExpt.-2: T o understand the working of a Single-\nLayer P erceptr on\nDate: 21/07/2026\nPART A\n!pip install torch\nRequirement already satisfied: torch in C:\\Users\\STUDENT\\aiml\\Lib\\site-packages\n(2.13.0)\nRequirement already satisfied: filelock in C:\\Users\\STUDENT\\aiml\\Lib\\site-packa\nges (from torch) (3.31.2)\nRequirement already satisfied: typing-extensions>=4.10.0 in C:\\Users\\STUDENT\\ai\nml\\Lib\\site-packages (from torch) (4.16.0)\nRequirement already satisfied: setuptools>=77.0.3 in C:\\Users\\STUDENT\\aiml\\Lib\\\nsite-packages (from torch) (83.0.0)\nRequirement already satisfied: sympy>=1.13.3 in C:\\Users\\STUDENT\\aiml\\Lib\\site-\npackages (from torch) (1.14.0)\nRequirement already satisfied: networkx>=2.5.1 in C:\\Users\\STUDENT\\aiml\\Lib\\sit\ne-packages (from torch) (3.6.1)\nRequirement already satisfied: jinja2 in C:\\Users\\STUDENT\\aiml\\Lib\\site-package\ns (from torch) (3.1.6)\nRequirement already satisfied: fsspec>=0.8.5 in C:\\Users\\STUDENT\\aiml\\Lib\\site-\npackages (from torch) (2026.6.0)\nRequirement already satisfied: mpmath<1.4,>=1.1.0 in C:\\Users\\STUDENT\\aiml\\Lib\\\nsite-packages (from sympy>=1.13.3->torch) (1.3.0)\nRequirement already satisfied: MarkupSafe>=2.0 in C:\\Users\\STUDENT\\aiml\\Lib\\sit\ne-packages (from jinja2->torch) (3.0.3)\nimport torch\nimport torch.nn asnn\nimport torch.optim asoptim\n# Input and Output\nX=torch.tensor([[0.,0.],\n[0.,1.],\n[1.,0.],\n[1.,1.]])\nIn[]:\nIn[]:\nIn[]:\nY=torch.tensor([[0.],\n[0.],\n[0.],\n[1.]])\nprint(X.shape)\nprint(f\"Dimension of X: {X.ndim}\")\ntorch.Size([4, 2])\nDimension of X: 2\nprint(Y.shape)\nprint(f\"Dimension of Y: {Y.ndim}\")\ntorch.Size([4, 1])\nDimension of Y: 2\n# Initialize weights and bias\nW=torch.randn(2,1,requires_grad =True )\nb=torch.randn(1,requires_grad =True )\nlearning_rate =0.1\n# Training\nfor epochinrange(1000):\n# Forward propagation\nz=X@W+b\noutput=torch.sigmoid(z)\n# Binary Cross Entropy Loss\n# loss = -(Y * torch.log(output) +\n#          (1 - Y) * torch.log(1 - output)).mean()\ncriterion =nn.BCELoss()\nloss=criterion (output,Y)\n# Backward propagation computes gradients\nloss.backward ()\n# Update weights\nwith torch.no_grad():\nW-=learning_rate *W.grad\nb-=learning_rate *b.grad\nW.grad.zero_()\nb.grad.zero_()\n# Testing\nwith torch.no_grad():\n# prediction = (torch.sigmoid(X @ W + b) >= 0.5).float()         #coverts boolean to float\nprediction =(output>=0.5).float() #coverts boolean to float\nprint(\"Predictions\" )\nprint(prediction )\nIn[]:\nIn[]:\nIn[]:\nIn[]:\nIn[]:\nIn[]:\naccuracy =(prediction ==Y).float().mean()*100\nprint(\"\\nAccuracy =\" ,accuracy .item(),\"%\")\nprint(\"\\nFinal Weights\" )\nprint(W)\nprint(\"\\nFinal Bias\" )\nprint(b)\nPredictions\ntensor([[0.],\n[0.],\n[0.],\n[1.]])\nAccuracy = 100.0 %\nFinal Weights\ntensor([[3.0753],\n[3.0894]], requires_grad=True)\nFinal Bias\ntensor([-4.8394], requires_grad=True)\nCreating Model using NN Library\n# Input and Output\nx=torch.tensor([[0.,0.],\n[0.,1.],\n[1.,0.],\n[1.,1.]])\ny=torch.tensor([[0.],\n[0.],\n[0.],\n[1.]])\nprint(x.shape)\nprint(f\"Dimension of x: {x.ndim}\")\ntorch.Size([4, 2])\nDimension of x: 2\nprint(y.shape)\nprint(f\"Dimension of y: {y.ndim}\")\ntorch.Size([4, 1])\nDimension of y: 2\n# Initialize weights and bias\nW=torch.randn(3,2,requires_grad =True )\nb=torch.randn(2,requires_grad =True )\nlearning_rate =0.1\nIn[]:\nIn[]:\nIn[]:\nIn[]:\nmodel=nn.Sequential (\nnn.Linear(2,1),\nnn.Sigmoid()\n)\ncriterion =nn.BCELoss()\noptimizer =optim.SGD(model.parameters (),lr=0.1)\nfor epochinrange(1000):\noutput=model(x)\nloss=criterion (output,y)\noptimizer .zero_grad ()\nloss.backward ()\noptimizer .step()\n# Testing\nwith torch.no_grad():\n# prediction = (torch.sigmoid(X @ W + b) >= 0.5).float()         #coverts boolean to float\nprediction =(output>=0.5).float() #coverts boolean to float\nprint(\"Predictions\" )\nprint(prediction )\naccuracy =(prediction ==Y).float().mean()*100\nprint(\"\\nAccuracy =\" ,accuracy .item(),\"%\")\nprint(\"\\nFinal Weights\" )\nprint(W)\nprint(\"\\nFinal Bias\" )\nprint(b)\nPredictions\ntensor([[0.],\n[0.],\n[0.],\n[1.]])\nAccuracy = 100.0 %\nFinal Weights\ntensor([[ 0.4579, -0.3437],\n[ 1.0750, -1.0304],\n[ 0.1408, -0.0144]], requires_grad=True)\nFinal Bias\ntensor([ 0.6755, -0.3910], requires_grad=True)\nPART B\nL=torch.tensor([\nIn[]:\nIn[]:\nIn[]:\nIn[]:\nIn[]:\n[1.,1.],\n[2.,1.],\n[2.,2.],\n[3.,2.],\n[6.,5.],\n[7.,6.],\n[8.,6.],\n[9.,7.],\n])\nM=torch.tensor([0.,0.,0.,0.,1.,1.,1.,1.]).view(-1,1)\nprint(L)\nprint(L.shape)\nprint(f\"Dimension of L: {L.ndim}\")\ntensor([[1., 1.],\n[2., 1.],\n[2., 2.],\n[3., 2.],\n[6., 5.],\n[7., 6.],\n[8., 6.],\n[9., 7.]])\ntorch.Size([8, 2])\nDimension of L: 2\nprint(M)\nprint(M.shape)\nprint(f\"Dimension of M: {M.ndim}\")\ntensor([[0.],\n[0.],\n[0.],\n[0.],\n[1.],\n[1.],\n[1.],\n[1.]])\ntorch.Size([8, 1])\nDimension of M: 2\n# Initialize weights and bias\nW=torch.randn(2,1,requires_grad =True )\nb=torch.randn(1,requires_grad =True )\nlearning_rate =0.1\n# Training\nfor epochinrange(1000):\n# Forward propagation\nz=X@W+b\noutput=torch.sigmoid(z)\nIn[]:\nIn[]:\nIn[]:\nIn[]:\n# Binary Cross Entropy Loss\n# loss = -(Y * torch.log(output) +\n#          (1 - Y) * torch.log(1 - output)).mean()\ncriterion =nn.BCELoss()\nloss=criterion (output,Y)\n# Backward propagation computes gradients\nloss.backward ()\n# Update weights\nwith torch.no_grad():\nW-=learning_rate *W.grad\nb-=learning_rate *b.grad\nW.grad.zero_()\nb.grad.zero_()\n# Testing\nwith torch.no_grad():\n# prediction = (torch.sigmoid(X @ W + b) >= 0.5).float()         #coverts boolean to float\nprediction =(output>=0.5).float() #coverts boolean to float\nprint(\"Predictions\" )\nprint(prediction )\naccuracy =(prediction ==Y).float().mean()*100\nprint(\"\\nAccuracy =\" ,accuracy .item(),\"%\")\nprint(\"\\nFinal Weights\" )\nprint(W)\nprint(\"\\nFinal Bias\" )\nprint(b)\nPredictions\ntensor([[0.],\n[0.],\n[0.],\n[1.]])\nAccuracy = 100.0 %\nFinal Weights\ntensor([[2.9827],\n[3.0081]], requires_grad=True)\nFinal Bias\ntensor([-4.7118], requires_grad=True)\nIn[]:\nIn[]:\nPART C\nExample: Aptitude and Intervie and y is\nemployee placement.\nA=torch.tensor([\n[1.,1.],\n[2.,1.],\n[2.,2.],\n[3.,2.],\n[6.,5.],\n[7.,6.],\n[8.,6.],\n[9.,7.],\n])\nB=torch.tensor([0.,0.,0.,0.,1.,1.,1.,1.]).view(-1,1)\nprint(A)\nprint(A.shape)\nprint(f\"Dimension of A: {A.ndim}\")\ntensor([[1., 1.],\n[2., 1.],\n[2., 2.],\n[3., 2.],\n[6., 5.],\n[7., 6.],\n[8., 6.],\n[9., 7.]])\ntorch.Size([8, 2])\nDimension of A: 2\nprint(B)\nprint(B.shape)\nprint(f\"Dimension of B: {B.ndim}\")\ntensor([[0.],\n[0.],\n[0.],\n[0.],\n[1.],\n[1.],\n[1.],\n[1.]])\ntorch.Size([8, 1])\nDimension of B: 2\n# Initialize weights and bias\nW=torch.randn(3,2,requires_grad =True )\nIn[]:\nIn[]:\nIn[]:\nIn[]:\nb=torch.randn(2,requires_grad =True )\nlearning_rate =0.1\nmodel=nn.Sequential (\nnn.Linear(2,1),\nnn.Sigmoid()\n)\ncriterion =nn.BCELoss()\noptimizer =optim.SGD(model.parameters (),lr=0.1)\nfor epochinrange(1000):\noutput=model(A)\nloss=criterion (output,B)\noptimizer .zero_grad ()\nloss.backward ()\noptimizer .step()\n# Testing\nwith torch.no_grad():\n# prediction = (torch.sigmoid(X @ W + b) >= 0.5).float()         #coverts boolean to float\nprediction =(output>=0.5).float() #coverts boolean to float\nprint(\"Predictions\" )\nprint(prediction )\naccuracy =(prediction ==B).float().mean()*100\nprint(\"\\nAccuracy =\" ,accuracy .item(),\"%\")\nprint(\"\\nFinal Weights\" )\nprint(W)\nprint(\"\\nFinal Bias\" )\nprint(b)\nIn[]:\nIn[]:\nIn[]:\nIn[]:\nPredictions\ntensor([[0.],\n[0.],\n[0.],\n[0.],\n[1.],\n[1.],\n[1.],\n[1.]])\nAccuracy = 100.0 %\nFinal Weights\ntensor([[-0.5088,  0.4474],\n[-0.0741,  0.4489],\n[ 1.1179,  0.8430]], requires_grad=True)\nFinal Bias\ntensor([ 0.9561, -0.1887], requires_grad=True)\nIn[]:\n"
+    },
+    "atsScore": 45,
+    "skills": [
+      "machine learning",
+      "deep learning"
+    ],
+    "suggestions": {
+      "missingSkills": [
+        "Docker",
+        "AWS",
+        "SQL",
+        "Unit Testing",
+        "Git"
+      ],
+      "formatting": "Formatting needs significant improvement to pass automated filters.",
+      "keywordsToAdd": [
+        "Add a detailed Work Experience section to list prior responsibilities.",
+        "Add an Education section outlining your academic background.",
+        "Ensure your email address and phone number are clearly visible.",
+        "Integrate more technical skill keywords matching your industry."
+      ]
+    },
+    "keywords": [
+      {
+        "text": "print",
+        "value": 48
+      },
+      {
+        "text": "prediction",
+        "value": 24
+      },
+      {
+        "text": "float",
+        "value": 20
+      },
+      {
+        "text": "output",
+        "value": 18
+      },
+      {
+        "text": "dimension",
+        "value": 16
+      },
+      {
+        "text": "true",
+        "value": 16
+      },
+      {
+        "text": "tensor",
+        "value": 16
+      },
+      {
+        "text": "weight",
+        "value": 14
+      },
+      {
+        "text": "torch",
+        "value": 12
+      },
+      {
+        "text": "bia",
+        "value": 12
+      },
+      {
+        "text": "accuracy",
+        "value": 12
+      },
+      {
+        "text": "requirement",
+        "value": 10
+      }
+    ],
+    "connections": [
+      {
+        "userId": "1786797895056oosylosdhtk",
+        "status": "accepted",
+        "direction": "sent"
+      }
+    ]
+  }
+]

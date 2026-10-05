@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.Connect - Job Matchmaker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .jobs-container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        .jobs-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .jobs-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .job-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .job-info h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.4rem;
+        }
+
+        .job-info .company-name {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .job-info .description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .job-tags span {
+            display: inline-block;
+            background: rgba(255,255,255,0.05);
+            padding: 0.3rem 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .match-score-container {
+            flex-shrink: 0;
+            text-align: center;
+            margin-left: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .match-score {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 4px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .match-high { border-color: #10b981; color: #10b981; }
+        .match-medium { border-color: #f59e0b; color: #f59e0b; }
+        .match-low { border-color: #ef4444; color: #ef4444; }
+
+        .apply-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .apply-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-network-wired"></i>
+            <span>.Connect</span>
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="connect.html">Connections</a>
+            <a href="chat.html">Messages</a>
+            <a href="jobs.html" class="active">Jobs</a>
+            <a href="matcher.html">Resume Matcher</a>
+            <a href="interview.html">Interview Prep</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="profile.html">Profile</a>
+            <a href="#" onclick="logout()" class="btn btn-secondary" style="padding: 0.4rem 1rem; margin-left: 1rem; font-size: 0.85rem;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="jobs-container">
+        <div class="jobs-header">
+            <h1>Job Matchmaker</h1>
+            <p>We've analyzed your resume and skills to bring you the best opportunities.</p>
+        </div>
+
+        <div id="jobList">
+            <div style="text-align: center; color: var(--text-muted); padding: 3rem;">Loading jobs...</div>
+        </div>
+    </div>
+
+    <!-- Personalization Modal -->
+    <div id="personalizationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div style="background: var(--bg-card); padding: 2.5rem; border-radius: 1.5rem; width: 90%; max-width: 500px; border: 1px solid var(--border-color); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <i class="fas fa-user-gear" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                <h2 style="margin: 0;">Tell us more about yourself</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">We want to provide the best career matches for you.</p>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-main);">What is your primary field of interest?</label>
+                <select id="fieldSelect" style="width: 100%; padding: 1rem; border-radius: 0.8rem; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); font-family: inherit;">
+                    <option value="">Select a field...</option>
+                    <option value="Frontend Development">Frontend Development</option>
+                    <option value="Backend Development">Backend Development</option>
+                    <option value="Full Stack Development">Full Stack Development</option>
+                    <option value="UI/UX Design">UI/UX Design</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="Product Management">Product Management</option>
+                    <option value="Mobile Development">Mobile Development</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label style="display: block; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-main);">How many years of experience do you have?</label>
+                <select id="experienceSelect" style="width: 100%; padding: 1rem; border-radius: 0.8rem; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); font-family: inherit;">
+                    <option value="">Select experience level...</option>
+                    <option value="Beginner (0-1 years)">Beginner (0-1 years)</option>
+                    <option value="Intermediate (2-5 years)">Intermediate (2-5 years)</option>
+                    <option value="Senior (5+ years)">Senior (5+ years)</option>
+                </select>
+            </div>
+
+            <button id="savePersonalizationBtn" style="width: 100%; padding: 1rem; border: none; background: var(--primary-color); color: white; border-radius: 0.8rem; font-weight: 700; cursor: pointer; font-size: 1rem; transition: transform 0.2s;">
+                Optimize My Jobs
+            </button>
+        </div>
+    </div>
+
+    <footer style="border-top: 1px solid var(--glass-border); padding: 5rem 0; background: var(--nav-bg); margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;">
+            <div>
+                <a href="/" class="logo">.<span>Connect</span>.</a>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem;">The high-performance platform for career growth, networking, and technical excellence.</p>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Platform</h4>
+                <a href="/jobs.html" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Job Board</a>
+                <a href="/interview.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Interview Prep</a>
+                <a href="/leaderboard.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Leaderboard</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Resources</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Resume Tips</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">AI Interview Guide</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Success Stories</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Company</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">About Us</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Privacy Policy</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Contact Support</a>
+            </div>
+        </div>
+        <div class="container" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; padding-top: 2rem;">
+            <p style="font-size: 0.8rem; color: var(--text-secondary); opacity: 0.5;">&copy; 2026 .Connect Platform Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/ui.js"></script>
+    <script src="js/jobs.js"></script>
+</body>
+</html>

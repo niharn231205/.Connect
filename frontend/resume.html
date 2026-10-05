@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Resume - .Connect</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <a href="/dashboard.html" class="logo">.<span>Connect</span>.</a>
+        <div class="nav-links">
+            <a href="/dashboard.html">Dashboard</a>
+            <a href="/leaderboard.html">Leaderboard</a>
+            <a href="/profile.html">Profile</a>
+            <a href="#" onclick="logout()" class="btn btn-secondary" style="padding: 0.4rem 1rem; margin-left: 1rem; font-size: 0.85rem;">Logout</a>
+        </div>
+    </nav>
+    <div class="container center-content container animate-fade">
+        <div class="glass-card" style="max-width: 680px; width: 100%;">
+            <header style="margin-bottom: 2rem;">
+                <h2 style="margin-bottom: 0.5rem; color: var(--accent);">Level Up Your Profile</h2>
+                <p>Upload your resume to unlock AI-driven insights and your competitive ATS score.</p>
+            </header>
+            
+            <div id="error-msg" class="error"></div>
+            <div id="success-msg" class="success"></div>
+            
+            <form id="resume-form" style="margin-top: 1.5rem;">
+                <div class="form-group">
+                    <label>Resume File (PDF, DOCX)</label>
+                    <div style="position: relative;">
+                        <input type="file" id="resume-file" class="form-control" accept=".pdf,.doc,.docx" required style="padding: 2.5rem 1.5rem; border: 2px dashed var(--glass-border); background: rgba(255,255,255,0.02); text-align: center;">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Analyze My Resume</button>
+            </form>
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+                <button onclick="window.location.href='/questions.html'" class="btn btn-secondary" style="border: none;">Skip for now &rarr;</button>
+            </div>
+        </div>
+    </div>
+    <footer style="border-top: 1px solid var(--glass-border); padding: 5rem 0; background: var(--nav-bg); margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;">
+            <div>
+                <a href="/" class="logo">.<span>Connect</span>.</a>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem;">The high-performance platform for career growth, networking, and technical excellence.</p>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Platform</h4>
+                <a href="/jobs.html" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Job Board</a>
+                <a href="/interview.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Interview Prep</a>
+                <a href="/leaderboard.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Leaderboard</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Resources</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Resume Tips</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">AI Interview Guide</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Success Stories</a>
+            </div>
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Company</h4>
+                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">About Us</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Privacy Policy</a>
+                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Contact Support</a>
+            </div>
+        </div>
+        <div class="container" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; padding-top: 2rem;">
+            <p style="font-size: 0.8rem; color: var(--text-secondary); opacity: 0.5;">&copy; 2026 .Connect Platform Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/resume.js"></script>
+</body>
+</html>
