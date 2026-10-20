@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = (window.location.protocol === 'file:') 
+    ? 'http://localhost:3000/api' 
+    : (window.API_URL || `${window.location.origin}/api`);
 
 const setToken = (token) => localStorage.setItem('token', token);
 const getToken = () => localStorage.getItem('token');
