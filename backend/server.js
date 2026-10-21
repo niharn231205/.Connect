@@ -19,7 +19,7 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 // Serve static frontend files
-app.use(express.static(path.join(__dirname, '../frontend'), { extensions: ['html'] }));
+app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Initialize upload folder if missing
