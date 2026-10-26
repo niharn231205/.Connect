@@ -1,4 +1,7 @@
-const API_URL = 'http://localhost:3000/api';
+// Dynamic API URL: works seamlessly in production (deployed) and local dev
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port !== '3000' && window.location.port !== ''
+    ? `${window.location.protocol}//${window.location.hostname}:3000/api`
+    : '/api';
 
 const setToken = (token) => localStorage.setItem('token', token);
 const getToken = () => localStorage.getItem('token');
