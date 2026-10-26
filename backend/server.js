@@ -64,9 +64,12 @@ io.on('connection', (socket) => {
     });
 });
 
-// Catch-all: serve frontend index.html for any unmatched GET requests
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+// Catch-all: serve frontend index.html for any unmatched GET requests (Express 5 compatible)
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+        return res.sendFile(path.join(__dirname, '../frontend/index.html'));
+    }
+    next();
 });
 
 const PORT = process.env.PORT || 3000;
