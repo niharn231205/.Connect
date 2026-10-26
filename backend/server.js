@@ -64,6 +64,11 @@ io.on('connection', (socket) => {
     });
 });
 
+// Catch-all: serve frontend index.html for any unmatched GET requests
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
