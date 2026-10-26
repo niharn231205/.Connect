@@ -3,6 +3,9 @@ import os
 import json
 import re
 import math
+import zlib
+import zipfile
+import xml.etree.ElementTree as ET
 
 # Try importing external libraries, set flags if unavailable
 HAS_PYPDF2 = False
@@ -138,41 +141,111 @@ SKILL_DICTIONARY = {
 }
 
 def extract_text_from_pdf(pdf_path):
-    """Extracts text from a PDF file."""
+    """Extracts text from a PDF file using PyPDF2 with a robust pure-Python stream fallback."""
     text = ""
-    if not HAS_PYPDF2:
-        return "[Notice: PyPDF2 not installed. Could not extract text from PDF.]"
-    
-    try:
-        with open(pdf_path, 'rb') as file:
-            reader = PyPDF2.PdfReader(file)
-            for page_num in range(len(reader.pages)):
-                page = reader.pages[page_num]
-                page_text = page.extract_text()
-                if page_text:
-                    text += page_text + "\n"
-        return text
-    except Exception as e:
-        return f"[Error parsing PDF: {str(e)}]"
+    # Method 1: Try PyPDF2 if available
+    if HAS_PYPDF2:
+        try:
+            with open(pdf_path, 'rb') as file:
+                reader = PyPDF2.PdfReader(file)
+                for page_num in range(len(reader.pages)):
+                    page = reader.pages[page_num]
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text + "\n"
+        except Exception:
+            pass
+
+    # Method 2: If PyPDF2 returned empty or is not installed, parse PDF content streams directly
+    if not text.strip():
+        try:
+            with open(pdf_path, 'rb') as f:
+                content = f.read()
+
+            text_chunks = []
+            # Find and decompress all FlateDecode streams
+            streams = re.findall(rb"stream[\r\n]+(.*?)[\r\n]+endstream", content, re.DOTALL)
+            for s in streams:
+                decompressed = None
+                try:
+                    decompressed = zlib.decompress(s)
+                except Exception:
+                    try:
+                        decompressed = zlib.decompress(s, -15)
+                    except Exception:
+                        decompressed = s
+
+                if decompressed:
+                    # Match single string outputs: (Text) Tj, ' or "
+                    tj_matches = re.findall(rb"\(((?:[^()\\]|\\.)*)\)\s*(?:Tj|'|\")", decompressed)
+                    for m in tj_matches:
+                        try:
+                            text_chunks.append(m.decode('latin1', errors='ignore'))
+                        except Exception:
+                            pass
+
+                    # Match kerning array text: [(T) 10 (e) 10 (x)] TJ
+                    tj_array = re.findall(rb"\[(.*?)\]\s*TJ", decompressed, re.DOTALL)
+                    for arr in tj_array:
+                        parts = re.findall(rb"\(((?:[^()\\]|\\.)*)\)", arr)
+                        for p in parts:
+                            try:
+                                text_chunks.append(p.decode('latin1', errors='ignore'))
+                            except Exception:
+                                pass
+
+            if text_chunks:
+                extracted = " ".join(text_chunks)
+                # Unescape PDF escape codes
+                extracted = re.sub(r'\\[0-7]{1,3}', ' ', extracted)
+                extracted = extracted.replace(r'\(', '(').replace(r'\)', ')').replace(r'\\', '\\')
+                text = extracted
+            else:
+                # Method 3: Fallback to readable ASCII/UTF-8 string scanning
+                strings = re.findall(rb"[A-Za-z0-9@.,:+\-\s]{4,}", content)
+                filtered = []
+                for s in strings:
+                    try:
+                        dec = s.decode('latin1', errors='ignore').strip()
+                        if len(dec) > 3 and not dec.startswith('Font') and not dec.startswith('obj') and not dec.startswith('xref'):
+                            filtered.append(dec)
+                    except Exception:
+                        pass
+                text = " ".join(filtered)
+        except Exception:
+            pass
+
+    return text
 
 def extract_text_from_docx(docx_path):
-    """Extracts text from a DOCX file."""
+    """Extracts text from a DOCX file using python-docx or standard library zipfile."""
     text = ""
-    if not HAS_DOCX:
-        return "[Notice: python-docx not installed. Could not extract text from DOCX.]"
-    
-    try:
-        doc = docx.Document(docx_path)
-        for para in doc.paragraphs:
-            text += para.text + "\n"
-        for table in doc.tables:
-            for row in table.rows:
-                for cell in row.cells:
-                    text += cell.text + " "
-                text += "\n"
-        return text
-    except Exception as e:
-        return f"[Error parsing DOCX: {str(e)}]"
+    # Method 1: Try python-docx if available
+    if HAS_DOCX:
+        try:
+            doc = docx.Document(docx_path)
+            for para in doc.paragraphs:
+                text += para.text + "\n"
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        text += cell.text + " "
+                    text += "\n"
+        except Exception:
+            pass
+
+    # Method 2: Zero-dependency fallback using zipfile and XML parsing
+    if not text.strip():
+        try:
+            with zipfile.ZipFile(docx_path) as z:
+                xml_content = z.read('word/document.xml')
+                tree = ET.fromstring(xml_content)
+                nodes = [node.text for node in tree.iter() if node.tag.endswith('}t') and node.text]
+                text = " ".join(nodes)
+        except Exception:
+            pass
+
+    return text
 
 def extract_text(file_path):
     """Helper to route extraction based on file extension."""
@@ -343,7 +416,7 @@ def analyze_resume(resume_text):
         suggestions_list.append("Add an Education section outlining your academic background.")
         
     has_email = "@" in resume_text
-    has_phone = re.search(r'\b\d{10}\b|\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b', resume_text) is not None
+    has_phone = re.search(r'(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\b\d{10}\b', resume_text) is not None
     if has_email and has_phone:
         ats_score += 15
     else:

@@ -10,13 +10,13 @@ const storage = multer.diskStorage({
     }
 });
 
-// Allow pdf and doc/docx
+// Allow pdf, doc/docx, and txt
 const fileFilter = (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    if (ext === '.pdf' || ext === '.doc' || ext === '.docx') {
+    if (ext === '.pdf' || ext === '.doc' || ext === '.docx' || ext === '.txt') {
         cb(null, true);
     } else {
-        cb(new Error('Only PDF and Word documents are permitted'), false);
+        cb(new Error('Only PDF, Word, and Text documents are permitted'), false);
     }
 };
 
