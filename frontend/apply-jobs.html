@@ -1,0 +1,202 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Apply for jobs — .Connect</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+
+    <link href="/css/studio.css" rel="stylesheet" />
+    <link href="/css/apply-jobs.css" rel="stylesheet" />
+  </head>
+  <body class="app-page page-apply">
+    <a class="skip-link" href="#app-main">Skip to content</a>
+    <header class="mobile-header">
+      <a class="logo" href="/dashboard.html">.<span>Connect</span>.</a
+      ><button
+        aria-controls="studio-sidebar"
+        aria-expanded="false"
+        aria-label="Open navigation"
+        class="menu-toggle"
+      >
+        <i aria-hidden="true" class="fas fa-bars"></i>
+      </button>
+    </header>
+    <div class="nav-backdrop" hidden=""></div>
+    <aside class="studio-sidebar" id="studio-sidebar">
+      <a aria-label=".Connect home" class="logo" href="/"
+        >.<span>Connect</span>.</a
+      >
+      <div class="studio-label">YOUR CAREER STUDIO</div>
+      <nav aria-label="Workspace">
+        <a href="/dashboard.html"
+          ><i aria-hidden="true" class="fas fa-house"></i
+          ><span>Overview</span></a
+        ><a href="/resume.html"
+          ><i aria-hidden="true" class="fas fa-file-lines"></i
+          ><span>Your resume</span></a
+        ><a aria-current="page" href="/apply-jobs.html"
+          ><i aria-hidden="true" class="fas fa-arrow-up-right-from-square"></i
+          ><span>Apply for jobs</span></a
+        ><a href="/jobs.html"
+          ><i aria-hidden="true" class="fas fa-briefcase"></i
+          ><span>Role catalogue</span></a
+        ><a href="/matcher.html"
+          ><i aria-hidden="true" class="fas fa-arrows-left-right"></i
+          ><span>Resume matcher</span></a
+        ><a href="/interview.html"
+          ><i aria-hidden="true" class="fas fa-comment-dots"></i
+          ><span>Interview practice</span></a
+        ><a href="/connect.html"
+          ><i aria-hidden="true" class="fas fa-user-group"></i
+          ><span>Connections</span></a
+        ><a href="/chat.html"
+          ><i aria-hidden="true" class="fas fa-envelope"></i
+          ><span>Messages</span></a
+        ><a href="/leaderboard.html"
+          ><i aria-hidden="true" class="fas fa-ranking-star"></i
+          ><span>Leaderboard</span></a
+        ><a href="/profile.html"
+          ><i aria-hidden="true" class="fas fa-user"></i
+          ><span>Your profile</span></a
+        >
+      </nav>
+      <div class="sidebar-note">
+        <span class="tiny-dot"></span> A little progress, every day.
+      </div>
+      <button class="logout-button" onclick="logout()" type="button">
+        <i aria-hidden="true" class="fas fa-arrow-right-from-bracket"></i> Sign
+        out
+      </button>
+    </aside>
+    <main class="workspace" id="app-main" tabindex="-1">
+      <div class="prep-container apply-studio">
+        <header class="apply-intro">
+          <div>
+            <span class="eyebrow">FROM POTENTIAL TO POSSIBILITY</span>
+            <h1>Three doors.<br />Your next move.</h1>
+            <p>
+              Live openings selected for your verified resume. A focused
+              shortlist, ready when you are.
+            </p>
+          </div>
+          <div class="apply-edition" aria-label="Three saved opportunities">
+            <strong>03</strong><span>OPPORTUNITIES, FOR YOU</span>
+          </div>
+        </header>
+        <section class="apply-controls" aria-label="Job search preferences">
+          <form id="job-search-form">
+            <div class="form-group">
+              <label for="job-location"
+                >Preferred location
+                <span style="font-weight: 400">(optional)</span></label
+              >
+              <input
+                class="form-control"
+                id="job-location"
+                maxlength="160"
+                placeholder="City, country or Remote"
+                aria-describedby="location-help"
+              />
+            </div>
+            <button
+              class="btn btn-primary"
+              id="refresh-jobs"
+              type="submit"
+              disabled
+            >
+              Loading saved jobs…
+            </button>
+          </form>
+          <small id="location-help"
+            >Leave blank to use the location stated in your resume, or search
+            anywhere if none is listed. Location changes apply when you
+            refresh.</small
+          >
+          <small id="location-change-note" hidden
+            >Your current shortlist stays the same until you click Refresh
+            jobs.</small
+          >
+        </section>
+        <div
+          class="apply-notice error"
+          id="apply-error"
+          role="alert"
+          hidden
+        ></div>
+        <p id="apply-status" role="status" aria-live="polite"></p>
+        <div
+          class="apply-notice apply-progress"
+          id="apply-progress"
+          role="status"
+          aria-live="polite"
+          hidden
+        >
+          <span class="apply-spinner" aria-hidden="true"></span>
+          <div>
+            <p id="apply-phase">Preparing your search…</p>
+            <small
+              >This can take a few minutes. You can return to this page while
+              the search continues.</small
+            >
+          </div>
+        </div>
+        <p class="apply-notice" id="resume-change-note" hidden>
+          Your resume has changed since this shortlist was saved. Refresh jobs
+          when you want new matches.
+        </p>
+        <section
+          class="saved-summary"
+          id="saved-summary"
+          hidden
+          aria-label="Saved search details"
+        >
+          <div>
+            <h2>Your saved shortlist.</h2>
+            <p id="saved-date"></p>
+            <p id="saved-location-note"></p>
+          </div>
+          <span class="saved-pill">SAVED FOR YOU</span>
+        </section>
+        <div class="apply-empty" id="apply-empty">
+          <h2>A small list. A considered next step.</h2>
+          <p>We will look for three live jobs based on your accepted resume.</p>
+          <a class="text-link" href="/resume.html"
+            >Upload or review your resume ↗</a
+          >
+        </div>
+        <section
+          id="job-results"
+          aria-label="Three recommended jobs"
+          aria-busy="false"
+        ></section>
+        <div id="search-attribution"></div>
+        <p class="apply-footnote">
+          AI searches Google, then checks published employer postings on
+          Greenhouse, Lever and Ashby. Availability can change after the search.
+          Review the full requirements on the company page before applying.
+          Opening a link does not submit an application.
+        </p>
+        <p class="apply-footnote" id="storage-note">
+          Your shortlist is saved to your account on this server and copied to
+          this browser. The browser copy remains through server redeploys on
+          this device; clearing site data removes it. A new search runs only for
+          your first shortlist or when you click Refresh jobs.
+        </p>
+      </div>
+    </main>
+    <script src="/js/api.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/saved-jobs.js"></script>
+    <script src="/js/apply-jobs.js"></script>
+  </body>
+</html>

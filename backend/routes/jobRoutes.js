@@ -9,11 +9,14 @@ const {
 const { protect } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 const { careerAdvice } = require('../controllers/careerAdviceController');
+const { getApplicationJobs, startApplicationJobs } = require('../controllers/applicationJobsController');
 
 router.post('/', protect, createJob);
 router.get('/', protect, getJobs);
 router.post('/match-jd', protect, matchJd);
 router.post('/career-advice', protect, careerAdvice);
+router.get('/applications', protect, getApplicationJobs);
+router.post('/applications/search', protect, startApplicationJobs);
 router.post('/rank-resumes', protect, (req, res, next) => {
     upload.array('resumes')(req, res, error => {
         if (!error) return next();

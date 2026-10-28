@@ -33,3 +33,7 @@ backend/.venv/
 
 # Superdesign temporary preview files
 .superdesign/tmp/
+
+# Per-user live job snapshots (runtime data)
+backend/data/application-jobs.json
+backend/data/application-jobs.json.*.tmp

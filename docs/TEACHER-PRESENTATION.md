@@ -1,6 +1,6 @@
 # .Connect — teacher presentation script
 
-Use this as a spoken script, with the actions in brackets as your demo cues. The full version is approximately 8–10 minutes. Replace the name in the opening. The claims below describe implemented features; avoid calling the prototype a live recruitment service.
+Use this as a spoken script, with the actions in brackets as your demo cues. The full version is approximately 9–11 minutes. Replace the name in the opening. The claims below describe implemented features; describe the live job search separately from the demonstration role catalogue.
 
 ## Before presenting
 
@@ -79,6 +79,22 @@ This helps the student decide what to learn or explain more clearly in their res
 **Show:** One role card, then a pasted job description and its comparison results.
 
 **Be accurate:** “The current role list is a platform demonstration catalogue, not a live feed from employers. The comparison action does not submit a job application.”
+
+## 5A. Apply for jobs — 60 seconds
+
+**Say:**
+
+“From Overview or the sidebar, I open Apply for jobs. The app uses my accepted resume to identify relevant roles and professional skills, performs a live Google search, and verifies the candidate postings against employer publishing APIs on Greenhouse, Lever and Ashby.
+
+It saves a shortlist of exactly three jobs for my account. Each card shows the employer, role and location, explains why my skills fit, and points out requirements I should review. Clicking Apply at company opens that employer's application page in a new tab. It does not submit my application automatically.
+
+The same three jobs remain when I leave and return, reload the page, or update my resume. Only the Refresh jobs button requests a new shortlist. A failed refresh preserves the old one. This avoids losing an opportunity I wanted to review later.
+
+There is also a browser copy for this account, so this device retains the shortlist through a server redeploy. Clearing site data removes that copy. Job availability can change; the company page is the source to check before applying.”
+
+**Show:** Click the Overview shortcut, show three saved cards, open a company link, return and reload to show the same list. Demonstrate Refresh only if there is enough time for a live search.
+
+**What makes this useful:** “It connects resume guidance to a small, actionable shortlist, while keeping the user's selection stable until they ask for an update.”
 
 ## 6. Batch resume ranking — 35 seconds
 
@@ -192,7 +208,7 @@ The project supports a cycle: prepare, practice, reflect and improve. Thank you.
 
 **Does your job score guarantee an interview or send an application?**
 
-“No. It compares the profile or resume with listed requirements. The current catalogue and comparison controls do not submit applications or contact recruiters.”
+“No. It compares the profile or resume with listed requirements. The catalogue and comparison controls do not submit applications or contact recruiters. Apply for jobs opens verified employer postings so the student can review and apply themselves.”
 
 **How did you test this?**
 
@@ -200,7 +216,7 @@ The project supports a cycle: prepare, practice, reflect and improve. Thank you.
 
 **What would you improve next?**
 
-“Persistent account and transcript storage, stronger production access controls and rate limiting, a real employer job integration, and broader evaluation of AI feedback quality. I would add voice practice only after implementing and testing audio handling; it is not claimed in the current written interview feature.”
+“Persistent account and transcript storage, stronger production access controls and rate limiting, broader employer source coverage, and broader evaluation of AI feedback quality. I would add voice practice only after implementing and testing audio handling; it is not claimed in the current written interview feature.”
 
 ## A 90-second version if time is cut short
 
