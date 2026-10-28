@@ -1,24 +1,10 @@
 const fs = require('fs/promises');
 const db = require('../data/database');
 const { validateResumeWithGemini } = require('../services/geminiService');
-const { runPython } = require('../services/pythonService');
-
-async function runPythonParser(args) {
-    try {
-        const stdout = await runPython(args);
-        const result = JSON.parse(stdout);
-        if (result.error) throw Object.assign(new Error(result.error), { status: 422, code: 'UNREADABLE_DOCUMENT' });
-        return result;
-    } catch (error) {
-        if (error.status) throw error;
-        throw Object.assign(new Error('Document processing is unavailable. Please try again later.'), {
-            status: 503, code: 'EXTRACTION_UNAVAILABLE'
-        });
-    }
-}
+const { parseDocument, verifyResumeFile } = require('../services/resumeVerificationService');
 
 // Dependencies are injectable so failure paths can be tested without sending personal data.
-function createUploadResume({ database = db, parse = runPythonParser, verify = validateResumeWithGemini } = {}) {
+function createUploadResume({ database = db, parse = parseDocument, verify = validateResumeWithGemini } = {}) {
     return async (req, res) => {
         let saved = false;
         try {
@@ -26,17 +12,7 @@ function createUploadResume({ database = db, parse = runPythonParser, verify = v
             const user = database.findUserById(req.user.id);
             if (!user) return res.status(404).json({ message: 'User not found' });
 
-            const { extractedText } = await parse(['--extract', req.file.path]);
-            const verification = await verify(extractedText);
-            if (!verification.isResume || verification.confidence < 0.8) {
-                return res.status(422).json({
-                    code: verification.isResume ? 'UNCERTAIN_DOCUMENT' : 'NOT_A_RESUME',
-                    message: verification.isResume
-                        ? 'Gemini could not confidently identify this as a resume. Please upload a clearer resume/CV.'
-                        : `This document was not identified as a resume/CV. ${verification.reason}`,
-                    verification
-                });
-            }
+            const { extractedText, verification } = await verifyResumeFile(req.file.path, { parse, verify });
             // Analyze only after Gemini accepts the extracted document.
             const results = await parse(['--resume', req.file.path]);
             const updatedUser = database.updateUser(user.id, {
@@ -58,7 +34,8 @@ function createUploadResume({ database = db, parse = runPythonParser, verify = v
         } catch (error) {
             return res.status(error.status || 500).json({
                 code: error.code || 'UPLOAD_FAILED',
-                message: error.status ? error.message : 'Could not save your resume. Please try again.'
+                message: error.status ? error.message : 'Could not save your resume. Please try again.',
+                ...(error.verification ? { verification: error.verification } : {})
             });
         } finally {
             if (req.file && !saved) {

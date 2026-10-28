@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const { runPython: runPythonParser } = require('../services/pythonService');
+const { parseDocument, verifyResumeFile } = require('../services/resumeVerificationService');
+const { validateResumeWithGemini } = require('../services/geminiService');
 const db = require('../data/database');
 
 const jobsFile = path.join(__dirname, '../data/jobs.json');
@@ -167,33 +169,42 @@ const matchJd = async (req, res) => {
 };
 
 // Rank multiple uploaded resumes against a job description
-const rankResumes = async (req, res) => {
-    const tempFiles = [];
-    try {
-        const { jobDescription } = req.body;
-        const files = req.files;
+function createRankResumes({ parse = parseDocument, verify = validateResumeWithGemini } = {}) {
+    return async (req, res) => {
+        // Track every upload before validation so early exits also clean later files.
+        const tempFiles = (req.files || []).map(file => file.path);
+        try {
+            const { jobDescription } = req.body;
+            const files = req.files;
 
-        if (!jobDescription) {
-            return res.status(400).json({ message: 'Job Description is required' });
-        }
-        if (!files || files.length === 0) {
-            return res.status(400).json({ message: 'At least one resume is required' });
-        }
+            if (!jobDescription) {
+                return res.status(400).json({ message: 'Job Description is required' });
+            }
+            if (!files || files.length === 0) {
+                return res.status(400).json({ message: 'At least one resume is required' });
+            }
 
-        // Write Job Description to temp file
-        const jdTempPath = path.join(__dirname, `../uploads/jd_temp_rank_${Date.now()}.txt`);
-        fs.writeFileSync(jdTempPath, jobDescription);
-        tempFiles.push(jdTempPath);
+            // Validate the entire batch before producing any ranking.
+            for (let index = 0; index < files.length; index++) {
+                try {
+                    await verifyResumeFile(files[index].path, { parse, verify });
+                } catch (error) {
+                    if (error.status) error.message = `File ${index + 1}: ${error.message}`;
+                    throw error;
+                }
+            }
 
-        const rankings = [];
+            // Write Job Description to temp file
+            const jdTempPath = path.join(__dirname, `../uploads/jd_temp_rank_${Date.now()}.txt`);
+            fs.writeFileSync(jdTempPath, jobDescription);
+            tempFiles.push(jdTempPath);
 
-        // Process each resume file sequentially
-        for (const file of files) {
-            tempFiles.push(file.path); // add to delete list later
-            try {
-                const stdout = await runPythonParser(['--match', file.path, jdTempPath]);
-                const results = JSON.parse(stdout);
-                
+            const rankings = [];
+
+            // Process each resume file sequentially
+            for (const file of files) {
+                const results = await parse(['--match', file.path, jdTempPath]);
+
                 // Format candidate name from original file name
                 let candidateName = path.basename(file.originalname, path.extname(file.originalname));
                 candidateName = candidateName.replace(/[_-]/g, ' ')
@@ -206,39 +217,33 @@ const rankResumes = async (req, res) => {
                     missingSkills: results.missingSkills || [],
                     email: results.resumeSkills && results.resumeSkills.length ? `${candidateName.toLowerCase().replace(/\s/g, '')}@example.com` : 'unknown@example.com'
                 });
-            } catch (err) {
-                console.error(`Error ranking file ${file.originalname}:`, err);
-                // add fallback
-                rankings.push({
-                    candidateName: file.originalname,
-                    matchPercentage: 30,
-                    matchedSkills: [],
-                    missingSkills: ["Error matching"],
-                    email: 'error@example.com'
-                });
             }
+
+            // Sort by match score descending
+            rankings.sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+            res.json({ rankings });
+        } catch (error) {
+            res.status(error.status || 500).json({
+                code: error.code || 'RANKING_FAILED',
+                message: error.status ? error.message : 'Failed to process ranking. Please try again.'
+            });
+        } finally {
+            // Cleanup all temp files
+            tempFiles.forEach(file => {
+                if (fs.existsSync(file)) {
+                    try { fs.unlinkSync(file); } catch(e) {}
+                }
+            });
         }
-
-        // Sort by match score descending
-        rankings.sort((a, b) => b.matchPercentage - a.matchPercentage);
-
-        res.json({ rankings });
-    } catch (error) {
-        console.error("Resume ranker error:", error);
-        res.status(500).json({ message: 'Failed to process ranking' });
-    } finally {
-        // Cleanup all temp files
-        tempFiles.forEach(file => {
-            if (fs.existsSync(file)) {
-                try { fs.unlinkSync(file); } catch(e) {}
-            }
-        });
-    }
-};
+    };
+}
+const rankResumes = createRankResumes();
 
 module.exports = {
     createJob,
     getJobs,
     matchJd,
-    rankResumes
+    rankResumes,
+    createRankResumes
 };

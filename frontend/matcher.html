@@ -237,7 +237,7 @@
         <div id="multi-rank" class="matcher-section">
             <div class="glass-card">
                 <h3><i class="fas fa-ranking-star" style="color:var(--accent)"></i> Leaderboard Resume Ranker</h3>
-                <p style="font-size:0.9rem; margin-bottom:2rem">Upload multiple candidate resumes (PDF or DOCX) alongside a Job Description to rank them in order of relevance.</p>
+                <p style="font-size:0.9rem; margin-bottom:2rem">Upload candidate resumes/CVs (PDF, DOCX or TXT) alongside a Job Description to rank them in order of relevance. Extracted document text is sent to Google Gemini for a resume check. Experiment reports, assignments and other documents are rejected before ranking.</p>
                 
                 <div id="multi-error" class="error" style="display:none; margin-bottom:1rem"></div>
                 <div id="multi-success" class="success" style="display:none; margin-bottom:1rem"></div>
@@ -253,7 +253,7 @@
                         <div>
                             <div class="form-group">
                                 <label style="font-weight: 600;">2. Select Candidate Resumes</label>
-                                <input type="file" id="resumes-files" class="form-control" accept=".pdf,.doc,.docx" multiple required style="padding: 2.2rem 1.5rem; border: 2px dashed var(--glass-border); background: rgba(255,255,255,0.01); text-align: center; height: auto;">
+                                <input type="file" id="resumes-files" class="form-control" accept=".pdf,.docx,.txt" multiple required style="padding: 2.2rem 1.5rem; border: 2px dashed var(--glass-border); background: rgba(255,255,255,0.01); text-align: center; height: auto;">
                                 <p style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.5rem">Select multiple files (Hold Ctrl key to select more than one).</p>
                             </div>
                         </div>

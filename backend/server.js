@@ -7,6 +7,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 
 dotenv.config();
+require('./services/geminiService').logVerificationConfiguration();
 
 const app = express();
 const server = http.createServer(app);
