@@ -82,46 +82,6 @@ const getQuestionsByCompany = (req, res) => {
     }
 };
 
-const evaluateAnswer = (req, res) => {
-    try {
-        const { question, answer } = req.body;
-        
-        // Simple heuristic: length of answer, code blocks, technical keywords
-        let score = 0;
-        let feedback = "";
-        
-        const text = answer.toLowerCase();
-
-        if (text.length > 50) score += 20;
-        if (text.length > 150) score += 20;
-        
-        const technicalKeywords = ['function', 'class', 'let', 'const', 'return', 'if', 'for', 'while', 'map', 'filter', 'reduce', 'hash', 'array', 'pointer', 'node', 'tree', 'graph', 'time', 'complexity', 'space', 'O(n)'];
-        
-        let keywordCount = 0;
-        technicalKeywords.forEach(kw => {
-            if (text.includes(kw)) keywordCount++;
-        });
-
-        score += Math.min(60, keywordCount * 15);
-
-        if (score < 40) {
-            feedback = "Your answer is a bit brief or lacks technical depth. Try explaining the time and space complexity, or write pseudo-code using core programming concepts.";
-        } else if (score < 70) {
-            feedback = "Good attempt! You mentioned some solid concepts. Consider expanding on edge cases and optimal data structures.";
-        } else {
-            feedback = "Excellent response! You demonstrated a clear technical understanding of the problem and potential implementations.";
-        }
-
-        res.json({
-            score: Math.min(100, score),
-            feedback: feedback
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error evaluating answer' });
-    }
-};
-
 const downloadQuestionsPDF = (req, res) => {
     try {
         const company = req.query.company || 'Top MNC';
@@ -208,7 +168,6 @@ const getAnswer = (req, res) => {
 
 module.exports = {
     getQuestionsByCompany,
-    evaluateAnswer,
     downloadQuestionsPDF,
     getAnswer
 };

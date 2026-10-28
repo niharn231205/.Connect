@@ -1,290 +1,525 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        window.location.href = 'login.html';
-        return;
+checkAuth();
+document.addEventListener("DOMContentLoaded", async () => {
+  const $ = (id) => document.getElementById(id);
+  const setup = $("interview-setup"),
+    practice = $("interview-session"),
+    review = $("interview-review");
+  const error = $("interview-error"),
+    status = $("interview-status");
+  let archive,
+    active,
+    index = 0,
+    busy = false,
+    saveTimer;
+  function notice(message, failed = false) {
+    error.hidden = !failed;
+    error.textContent = failed ? message : "";
+    status.textContent = failed ? "" : message;
+  }
+  function node(tag, text, className) {
+    const el = document.createElement(tag);
+    if (text !== undefined) el.textContent = text;
+    if (className) el.className = className;
+    return el;
+  }
+  function button(label, fn, className = "btn btn-secondary") {
+    const el = node("button", label, className);
+    el.type = "button";
+    el.addEventListener("click", fn);
+    return el;
+  }
+  function download(blob, name) {
+    const url = URL.createObjectURL(blob),
+      a = node("a");
+    a.href = url;
+    a.download = name;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+  }
+  const jsonBlob = (value) =>
+    new Blob([JSON.stringify(value, null, 2)], { type: "application/json" });
+  function save() {
+    if (!archive || !active) return false;
+    try {
+      archive.save(active);
+      $("answer-save-state").textContent = "Saved on this browser.";
+      return true;
+    } catch (_) {
+      $("answer-save-state").textContent =
+        "Browser storage is unavailable or full. Download a backup before leaving.";
+      notice(
+        "This session could not be saved on this browser. Keep this page open and download its JSON backup before leaving.",
+        true,
+      );
+      return false;
     }
-
-    const setupArea = document.getElementById('setupArea');
-    const chatArea = document.getElementById('chatArea');
-    const chatHistory = document.getElementById('chatHistory');
-    const answerInput = document.getElementById('answerInput');
-    const submitBtn = document.getElementById('submitAnswerBtn');
-    const companyLabel = document.getElementById('companyLabel');
-    const progressLabel = document.getElementById('progressLabel');
-
-    let questions = [];
-    let currentQuestionIndex = 0;
-    let scores = [];
-    let currentCompany = '';
-
-    // Company Selection
-    document.querySelectorAll('.company-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const company = btn.getAttribute('data-company');
-            await startInterview(company);
-        });
+  }
+  async function api(path, body) {
+    const response = await fetch("/api/interview/" + path, {
+      method: "POST",
+      headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(80000),
     });
-
-    // PDF Download
-    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-    if (downloadPdfBtn) {
-        downloadPdfBtn.onclick = async () => {
-            try {
-                const currentCompany = companyLabel.innerText || 'Top_MNC';
-                const res = await fetch(`/api/interview/download?company=${currentCompany}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${currentCompany}_Practice_Questions.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            } catch (err) {
-                console.error("PDF Download failed", err);
-            }
-        };
+    const data = await response.json();
+    if (!response.ok)
+      throw new Error(
+        response.status === 401
+          ? "Sign in again to use AI practice. Your local journal is still available."
+          : data.message || "The AI request failed. Please retry.",
+      );
+    return data;
+  }
+  function showFeedback(target, evaluation) {
+    target.replaceChildren(
+      node("h3", `AI practice score · ${evaluation.score}/100`),
+      node("p", evaluation.feedback),
+    );
+    for (const [key, label] of [
+      ["strengths", "What worked"],
+      ["improvements", "What to improve"],
+    ]) {
+      target.append(node("h4", label));
+      const list = node("ul");
+      evaluation[key].forEach((text) => list.append(node("li", text)));
+      target.append(list);
     }
-
-    async function startInterview(company) {
-        setupArea.style.display = 'none';
-        chatArea.style.display = 'flex';
-        companyLabel.innerText = company;
-        currentCompany = company;
-        scores = [];
-
-        try {
-            chatHistory.innerHTML = '<div style="text-align:center; padding: 2rem;">Loading questions...</div>';
-            
-            const res = await fetch(`/api/interview/questions/${company}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            
-            questions = data.questions;
-            currentQuestionIndex = 0;
-            chatHistory.innerHTML = '';
-            
-            askCurrentQuestion();
-        } catch (err) {
-            console.error(err);
-            chatHistory.innerHTML = '<div style="color:red">Failed to start interview.</div>';
-        }
+    target.append(
+      node(
+        "p",
+        "AI feedback is a learning aid. Check technical claims against reliable references.",
+        "journal-source",
+      ),
+    );
+  }
+  function renderQuestion() {
+    const q = active.questions[index];
+    setup.hidden = true;
+    review.hidden = true;
+    practice.hidden = false;
+    $("session-role").textContent = active.role + " · " + active.level;
+    $("question-progress").textContent =
+      `Question ${index + 1} of ${active.questions.length}`;
+    $("current-question").textContent = q.question;
+    $("reference-answer").textContent = q.referenceAnswer;
+    $("interview-answer").value = q.answer || "";
+    $("interview-answer").disabled = !!q.evaluation;
+    $("evaluate-answer").hidden = !!q.evaluation;
+    $("evaluate-answer").disabled = false;
+    $("answer-feedback").hidden = !q.evaluation;
+    $("next-question").hidden = !q.evaluation;
+    $("next-question").textContent =
+      index === active.questions.length - 1
+        ? "Finish & save interview →"
+        : "Next question →";
+    if (q.evaluation) showFeedback($("answer-feedback"), q.evaluation);
+    practice.querySelector("details").open = false;
+    $("current-question").focus();
+  }
+  function exportSession(session) {
+    download(
+      jsonBlob({ version: 1, sessions: [session] }),
+      `.Connect-interview-${session.id}.json`,
+    );
+  }
+  function exportPdf(session) {
+    try {
+      download(
+        InterviewReport.pdf(session, window.jspdf.jsPDF),
+        `.Connect-interview-${session.id}.pdf`,
+      );
+    } catch (e) {
+      if (e.code === "UNICODE_REPORT") {
+        const url = URL.createObjectURL(
+          new Blob([InterviewReport.printable(session)], {
+            type: "text/html;charset=utf-8",
+          }),
+        );
+        const report = window.open(url, "_blank", "noopener");
+        notice(
+          "The report uses Unicode text. In the printable report, choose Print / Save as PDF. JSON backup preserves every character.",
+        );
+        // Also provide the file when the browser blocks a new report tab.
+        if (!report)
+          download(
+            new Blob([InterviewReport.printable(session)], {
+              type: "text/html;charset=utf-8",
+            }),
+            `.Connect-printable-${session.id}.html`,
+          );
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } else
+        notice(
+          "PDF export is unavailable. Download the JSON backup to keep all questions and answers.",
+          true,
+        );
     }
-
-    function askCurrentQuestion() {
-        if (currentQuestionIndex >= questions.length) {
-            // Calculate average score and save
-            const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-            addBotMessage(`Interview complete. Preparing your practice summary…`);
-            answerInput.disabled = true;
-            submitBtn.disabled = true;
-            
-            // Show Report Modal
-            setTimeout(() => {
-                const modal = document.getElementById('reportModal');
-                if (modal) {
-                    modal.style.display = 'flex';
-                    document.getElementById('report-score').innerText = `${avgScore}%`;
-                    
-                    const statusEl = document.getElementById('report-status');
-                    const insightsEl = document.getElementById('report-insights');
-                    
-                    if (avgScore >= 80) {
-                        statusEl.innerText = "Strong practice";
-                        statusEl.style.color = "#2d6a4f";
-                        insightsEl.innerText = "Your answers matched many of the heuristic's length and keyword checks. Review the reference answers for technical accuracy.";
-                    } else if (avgScore >= 60) {
-                        statusEl.innerText = "Building confidence";
-                        statusEl.style.color = "var(--accent)";
-                        insightsEl.innerText = "Strong performance. Focus on refining your system design explanations and edge-case handling for a perfect score.";
-                    } else {
-                        statusEl.innerText = "Growth Required";
-                        statusEl.style.color = "#b53535";
-                        insightsEl.innerText = "You have the foundation, but need more practice with technical clarity. Review the model answers carefully and retry.";
-                    }
-                }
-            }, 1500);
-            
-            // Save to backend
-            fetch('/api/users/interview-score', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ company: currentCompany, score: avgScore })
-            }).catch(err => console.error('Failed to save score:', err));
-            
-            return;
-        }
-
-        const q = questions[currentQuestionIndex];
-        progressLabel.innerText = `Q ${currentQuestionIndex + 1} of ${questions.length}`;
-        addBotMessage(`Here is your question: **${q}**`);
-        
-        // Add a "Show Answer" hint (Better scoping to avoid connection errors)
-        const hintDiv = document.createElement('button');
-        hintDiv.type = 'button';
-        hintDiv.className = 'hint-link';
-        hintDiv.style.cssText = 'font-size: 0.8rem; color: var(--accent); cursor: pointer; margin-top: -1rem; margin-left: 2rem; margin-bottom: 1rem; transition: opacity 0.3s;';
-        hintDiv.innerHTML = '<i class="fas fa-lightbulb"></i> Stuck? Click to see the answer';
-        hintDiv.onclick = (e) => showAnswer(q, e.currentTarget);
-        chatHistory.appendChild(hintDiv);
-        scrollToBottom();
-    }
-
-    async function showAnswer(question, element) {
-        if (element.classList.contains('loading')) return;
-        
-        try {
-            element.classList.add('loading');
-            const originalHTML = element.innerHTML;
-            element.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading reference answer…';
-            
-            const res = await fetch('/api/interview/answer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ question })
-            });
-
-            if (!res.ok) throw new Error('Network response was not ok');
-            const data = await res.json();
-            
-            if (data.answer) {
-                // Remove the hint link before showing the answer
-                element.style.opacity = '0';
-                setTimeout(() => element.remove(), 300);
-                
-                addBotMessage(`**Optimal Answer:** ${data.answer}`, true);
-            } else {
-                addBotMessage("I'm sorry, I don't have a specific solution for that question in my database yet.");
-                element.innerHTML = originalHTML;
-                element.classList.remove('loading');
-            }
-        } catch (err) {
-            console.error("AI Tutor Connection Error:", err);
-            addBotMessage("Oops! I had trouble connecting to my brain. Please check if the server is running.");
-            element.classList.remove('loading');
-        }
-    }
-
-    submitBtn.addEventListener('click', async () => {
-        const text = answerInput.value.trim();
-        if (!text) return;
-
-        answerInput.value = '';
-        addUserMessage(text);
-        
-        // Disable input while evaluating
-        answerInput.disabled = true;
-        submitBtn.disabled = true;
-
-        try {
-            const res = await fetch('/api/interview/evaluate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    question: questions[currentQuestionIndex],
-                    answer: text
-                })
-            });
-            const evaluation = await res.json();
-            scores.push(evaluation.score);
-            addFeedbackMessage(`Score: ${evaluation.score}/100. ${evaluation.feedback}`);
-            
-            // Move to next question after short delay
-            setTimeout(() => {
-                currentQuestionIndex++;
-                answerInput.disabled = false;
-                submitBtn.disabled = false;
-                answerInput.focus();
-                askCurrentQuestion();
-            }, 2000);
-
-        } catch (err) {
-            console.error(err);
-            answerInput.disabled = false;
-            submitBtn.disabled = false;
-        }
+  }
+  function reviewSession(session) {
+    setup.hidden = true;
+    practice.hidden = true;
+    review.hidden = false;
+    const summary = $("review-summary");
+    summary.replaceChildren();
+    const head = node("div", undefined, "review-head"),
+      intro = node("div");
+    intro.append(
+      node("span", "A SESSION TO LEARN FROM", "eyebrow"),
+      node("h2", session.role),
+      node(
+        "p",
+        session.level + " · " + new Date(session.createdAt).toLocaleString(),
+      ),
+    );
+    head.append(
+      intro,
+      node(
+        "div",
+        session.status === "completed"
+          ? InterviewArchive.score(session) + "/100"
+          : "In progress",
+        "review-score",
+      ),
+    );
+    summary.append(head);
+    summary.append(
+      node(
+        "p",
+        session.status === "completed"
+          ? "Your questions, original answers, AI feedback and reference answers are below."
+          : "This draft is saved locally. Resume it to finish your practice.",
+      ),
+    );
+    const actions = node("div", undefined, "review-actions");
+    actions.append(
+      button("Download PDF", () => exportPdf(session), "btn btn-primary"),
+      button("Download JSON backup", () => exportSession(session)),
+      button("Start a new interview", newInterview),
+    );
+    if (session.status !== "completed")
+      actions.append(button("Resume this interview", () => resume(session)));
+    summary.append(
+      actions,
+      node(
+        "p",
+        "History is saved on this browser. Download a backup before clearing browser data or changing devices.",
+        "interview-disclosure",
+      ),
+    );
+    $("review-questions").replaceChildren();
+    session.questions.forEach((q, i) => {
+      const card = node("article", undefined, "glass-card review-question");
+      card.append(
+        node("span", `QUESTION ${i + 1}`, "eyebrow"),
+        node("h3", q.question),
+        node("h4", "Your original answer"),
+        node("p", q.answer || "Not answered yet.", "preserve-text"),
+      );
+      if (q.evaluation) {
+        const feedback = node("div", undefined, "feedback-panel");
+        showFeedback(feedback, q.evaluation);
+        card.append(feedback);
+      }
+      card.append(
+        node("h4", "AI reference answer"),
+        node("p", q.referenceAnswer, "preserve-text"),
+      );
+      $("review-questions").append(card);
     });
-
-    function addBotMessage(text, useTypewriter = false) {
-        const div = document.createElement('div');
-        div.className = 'msg-bubble msg-bot';
-        
-        // Process bold markers
-        const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        
-        if (useTypewriter) {
-            div.innerHTML = '';
-            chatHistory.appendChild(div);
-            typeWriter(div, formattedText);
-        } else {
-            div.innerHTML = formattedText;
-            chatHistory.appendChild(div);
-            scrollToBottom();
-        }
+    summary.tabIndex = -1;
+    summary.focus();
+  }
+  function newInterview() {
+    active = null;
+    setup.hidden = false;
+    practice.hidden = true;
+    review.hidden = true;
+    $("interview-role").focus();
+  }
+  function resume(session) {
+    active = structuredClone(session);
+    index = Math.max(
+      0,
+      active.questions.findIndex((q) => !q.evaluation),
+    );
+    renderQuestion();
+  }
+  function renderHistory() {
+    const list = $("interview-history-list");
+    list.replaceChildren();
+    if (!archive) return;
+    let sessions;
+    try {
+      sessions = archive.list();
+    } catch (_) {
+      notice(
+        "Saved history could not be read. Restore your JSON backup to recover it.",
+        true,
+      );
+      return;
     }
-
-    function typeWriter(element, html, speed = 15) {
-        let i = 0;
-        element.innerHTML = "";
-        
-        // Simple typewriter that handles HTML tags
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
-        const plainText = tempDiv.innerText;
-        const htmlContent = html;
-
-        // We use a simplified version: show the full content but reveal characters
-        // or just use interval for plain text if tags are simple.
-        // For robustness with <strong>, we'll reveal char by char.
-        let currentHTML = "";
-        let charIndex = 0;
-        
-        const timer = setInterval(() => {
-            if (charIndex < htmlContent.length) {
-                // If we hit a tag, add it all at once to keep it valid
-                if (htmlContent[charIndex] === '<') {
-                    const closingBracket = htmlContent.indexOf('>', charIndex);
-                    currentHTML += htmlContent.substring(charIndex, closingBracket + 1);
-                    charIndex = closingBracket + 1;
-                } else {
-                    currentHTML += htmlContent[charIndex];
-                    charIndex++;
-                }
-                element.innerHTML = currentHTML;
-                scrollToBottom();
-            } else {
-                clearInterval(timer);
-            }
-        }, speed);
+    const query = $("history-search").value.toLowerCase();
+    sessions = sessions.filter((s) =>
+      `${s.role} ${s.level} ${s.focus}`.toLowerCase().includes(query),
+    );
+    if (!sessions.length) {
+      list.append(
+        node(
+          "div",
+          query
+            ? "No sessions match your search."
+            : "Your practice journal is ready. Complete an interview to add your first session.",
+          "history-empty",
+        ),
+      );
+      return;
     }
-
-    function addUserMessage(text) {
-        const div = document.createElement('div');
-        div.className = 'msg-bubble msg-user';
-        div.innerText = text;
-        chatHistory.appendChild(div);
-        scrollToBottom();
+    sessions.forEach((s) => {
+      const card = node("article", undefined, "history-card"),
+        info = node("div"),
+        actions = node("div", undefined, "history-actions");
+      info.append(
+        node(
+          "span",
+          s.status === "completed"
+            ? `Completed · ${InterviewArchive.score(s)}/100`
+            : "Saved draft",
+          "tag",
+        ),
+        node("h3", s.role),
+        node(
+          "p",
+          `${s.level} · ${s.questions.length} questions · ${new Date(s.createdAt).toLocaleString()}`,
+        ),
+      );
+      if (s.focus) info.append(node("p", s.focus));
+      actions.append(
+        button(
+          s.status === "completed" ? "Review Q & A" : "Resume practice",
+          () => (s.status === "completed" ? reviewSession(s) : resume(s)),
+          "btn btn-primary",
+        ),
+        button("PDF", () => exportPdf(s)),
+        button("JSON", () => exportSession(s)),
+      );
+      card.append(info, actions);
+      list.append(card);
+    });
+  }
+  $("ai-interview-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (busy) return;
+    busy = true;
+    const btn = $("generate-interview");
+    btn.disabled = true;
+    btn.textContent = "Generating your questions…";
+    notice(
+      "Gemini is preparing your questions and reference answers. This can take up to a minute.",
+    );
+    try {
+      const role = $("interview-role").value.trim(),
+        level = $("interview-level").value,
+        focus = $("interview-focus").value.trim();
+      const data = await api("generate", {
+        role,
+        level,
+        focus,
+        count: Number($("interview-count").value),
+      });
+      active = InterviewArchive.validate({
+        id: crypto.randomUUID(),
+        role,
+        level,
+        focus,
+        createdAt: new Date().toISOString(),
+        status: "in_progress",
+        questions: data.questions,
+        provider: data.provider,
+        model: data.model,
+      });
+      const saved = save();
+      index = 0;
+      renderQuestion();
+      renderHistory();
+      if (saved)
+        notice(
+          "Your new session is saved on this browser. Take your time with each answer.",
+        );
+    } catch (e) {
+      notice(
+        e.name === "TimeoutError"
+          ? "The AI request timed out. Your previous history is safe; please try again."
+          : e.message,
+        true,
+      );
+    } finally {
+      busy = false;
+      btn.disabled = false;
+      btn.textContent = "Generate my interview →";
     }
-
-    function addFeedbackMessage(text) {
-        const div = document.createElement('div');
-        div.className = 'feedback-bubble';
-        div.innerText = text;
-        chatHistory.appendChild(div);
-        scrollToBottom();
+  });
+  $("interview-answer").addEventListener("input", () => {
+    if (!active || busy) return;
+    active.questions[index].answer = $("interview-answer").value;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 300);
+  });
+  window.addEventListener("pagehide", () => {
+    clearTimeout(saveTimer);
+    if (active) save();
+  });
+  $("interview-answer-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (busy || !active) return;
+    const q = active.questions[index];
+    if (q.evaluation) return;
+    q.answer = $("interview-answer").value;
+    save();
+    busy = true;
+    const btn = $("evaluate-answer");
+    btn.disabled = true;
+    btn.textContent = "Reviewing your answer…";
+    $("interview-answer").disabled = true;
+    notice(
+      "Gemini is reviewing correctness, relevance and clarity. Your answer is saved and will remain available if the request fails.",
+    );
+    try {
+      q.evaluation = await api("evaluate-ai", {
+        role: active.role,
+        level: active.level,
+        question: q.question,
+        referenceAnswer: q.referenceAnswer,
+        answer: q.answer,
+      });
+      const saved = save();
+      renderQuestion();
+      $("answer-feedback").focus();
+      if (saved)
+        notice("Feedback saved. Review it, then continue when you are ready.");
+    } catch (e) {
+      notice(
+        e.name === "TimeoutError"
+          ? "The AI review timed out. Your answer is still here. Please retry."
+          : e.message,
+        true,
+      );
+      $("interview-answer").disabled = false;
+    } finally {
+      busy = false;
+      btn.disabled = false;
+      btn.textContent = "Get AI feedback";
     }
-
-    function scrollToBottom() {
-        chatHistory.scrollTop = chatHistory.scrollHeight;
+  });
+  $("next-question").addEventListener("click", async () => {
+    if (busy || !active?.questions[index].evaluation) return;
+    if (index < active.questions.length - 1) {
+      index++;
+      renderQuestion();
+      return;
     }
+    active.status = "completed";
+    active.completedAt = new Date().toISOString();
+    const saved = save();
+    renderHistory();
+    reviewSession(active);
+    if (saved)
+      notice(
+        "Interview complete. Saved to your browser history — download a PDF or JSON backup below.",
+      );
+    // The dashboard stores only a summary; the full transcript stays on this device.
+    fetch("/api/users/interview-score", {
+      method: "POST",
+      headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company: active.role,
+        score: InterviewArchive.score(active),
+        sessionId: active.id,
+      }),
+    }).catch(() => {});
+  });
+  $("leave-practice").addEventListener("click", () => {
+    if (busy) {
+      notice("Please wait for the current AI request before leaving.", true);
+      return;
+    }
+    save();
+    renderHistory();
+    newInterview();
+  });
+  $("history-search").addEventListener("input", renderHistory);
+  $("export-interviews").addEventListener("click", () => {
+    try {
+      download(jsonBlob(archive.export()), ".Connect-interview-journal.json");
+    } catch (e) {
+      notice(e.message, true);
+    }
+  });
+  $("import-interviews").addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      if (file.size > 5 * 1024 * 1024)
+        throw new Error("Choose a JSON backup smaller than 5 MB.");
+      const count = archive.import(JSON.parse(await file.text()));
+      renderHistory();
+      notice(`Restored ${count} session(s) to this browser.`);
+    } catch (e) {
+      notice(
+        e instanceof SyntaxError
+          ? "This file is not valid JSON. Choose a .Connect journal backup."
+          : e.message,
+        true,
+      );
+    } finally {
+      event.target.value = "";
+    }
+  });
+  $("generate-interview").disabled = true;
+  try {
+    let userId;
+    try {
+      userId = JSON.parse(
+        atob(getToken().split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
+      ).id;
+    } catch (_) {
+      throw new Error("Sign in to start AI practice.");
+    }
+    let key = localStorage.getItem("connect.interview.identity." + userId);
+    try {
+      const response = await fetch("/api/users/dashboard", {
+        headers: getAuthHeaders(),
+        signal: AbortSignal.timeout(10000),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const hash = await crypto.subtle.digest(
+          "SHA-256",
+          new TextEncoder().encode(data.email.trim().toLowerCase()),
+        );
+        key =
+          "connect.interviews.v1." +
+          [...new Uint8Array(hash)]
+            .map((x) => x.toString(16).padStart(2, "0"))
+            .join("");
+        localStorage.setItem("connect.interview.identity." + userId, key);
+      }
+    } catch (_) {
+      /* A cached journal remains usable without the server. */
+    }
+    archive = InterviewArchive.create(
+      localStorage,
+      key || "connect.interviews.v1.user." + userId,
+    );
+    renderHistory();
+  } catch (e) {
+    notice(
+      "Browser history is unavailable. Enable site storage and reload to keep a practice journal. " +
+        e.message,
+      true,
+    );
+  } finally {
+    $("generate-interview").disabled = false;
+  }
 });
