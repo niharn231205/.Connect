@@ -25,7 +25,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   function button(label, fn, className = "btn btn-secondary") {
     const el = node("button", label, className);
     el.type = "button";
-    el.addEventListener("click", fn);
+    el.addEventListener("click", () => {
+      if (busy) return notice("Please wait for the current AI request before changing sessions.", true);
+      fn();
+    });
     return el;
   }
   function download(blob, name) {
@@ -240,10 +243,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   function resume(session) {
     active = structuredClone(session);
-    index = Math.max(
-      0,
-      active.questions.findIndex((q) => !q.evaluation),
-    );
+    index = active.questions.findIndex((q) => !q.evaluation);
+    if (index < 0) index = active.questions.length - 1;
     renderQuestion();
   }
   function renderHistory() {
@@ -460,10 +461,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const file = event.target.files[0];
     if (!file) return;
     try {
+      if (busy) throw new Error("Please wait for the current AI request before restoring a backup.");
       if (file.size > 5 * 1024 * 1024)
         throw new Error("Choose a JSON backup smaller than 5 MB.");
       const count = archive.import(JSON.parse(await file.text()));
       renderHistory();
+      if (active) {
+        const restored = archive.list().find(session => session.id === active.id);
+        if (restored?.status === "completed") { active = restored; reviewSession(restored); }
+      }
       notice(`Restored ${count} session(s) to this browser.`);
     } catch (e) {
       notice(
