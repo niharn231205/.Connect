@@ -4,7 +4,8 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { validateResumeWithGemini: validate } = require('../services/geminiService');
-const validateResumeWithGemini = text => validate(text, { wait: async () => {}, random: () => 0 });
+const validateResumeWithGemini = text => validate(text, { wait: async () => {}, random: () => 0,
+    selectAlternate: async () => 'gemini-3.5-flash-lite' });
 const { createUploadResume } = require('../controllers/resumeController');
 const resumeText = 'Jane Doe\nEducation: University degree\nProjects: Community library\nSkills: Teaching';
 const accepted = { isResume: true, confidence: 0.95, documentType: 'resume', reason: 'Personal career history.', provider: 'gemini' };
