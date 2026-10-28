@@ -55,17 +55,13 @@ const loadRecommendations = async (myConnections) => {
                 }
             }
 
-            // Generate a more professional role title
-            let roleTitle = user.category;
-            if (roleTitle.includes('Developer')) roleTitle = "Full-Stack Engineer";
-            if (roleTitle.includes('Beginner')) roleTitle = "Associate " + roleTitle.replace(' (Beginner)', '');
-            if (roleTitle.includes('Designer')) roleTitle = "Product Designer";
+            const roleTitle = user.category || user.field || 'Member';
 
             return `
                 <div class="glass-card" style="padding: 1.5rem; transition: transform 0.3s; height: 100%; display: flex; flex-direction: column;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem;">
                         <h3 style="margin-bottom: 0;">${user.name}</h3>
-                        ${user.label ? `<span class="tag" style="background: var(--accent); color: #000; border: none; font-weight: 800; font-size: 0.7rem; padding: 0.2rem 0.5rem;">${user.label}</span>` : ''}
+                        ${user.label ? `<span class="tag" style="background: #f5e8cb; color: #714600; border: none; font-weight: 800; font-size: 0.7rem; padding: 0.2rem 0.5rem;">${user.label}</span>` : ''}
                     </div>
                     <p style="color: var(--warning); font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">${roleTitle}</p>
                     <p style="font-size: 0.85rem; color: var(--text-secondary); flex: 1; margin-bottom: 1rem;">Specializing in ${user.field} with focus on ${user.interests.slice(0, 2).join(' & ')}.</p>
@@ -109,7 +105,7 @@ const renderSidebar = (connections) => {
     if (activeNetwork.length > 0) {
         activeContainer.innerHTML = activeNetwork.map(conn => `
             <div style="display: flex; align-items: center; gap: 0.75rem; background: rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 10px;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #f5e8cb; color: #714600; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem;">
                     ${conn.name.charAt(0)}
                 </div>
                 <div>

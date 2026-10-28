@@ -7,6 +7,10 @@ const setToken = (token) => localStorage.setItem('token', token);
 const getToken = () => localStorage.getItem('token');
 const removeToken = () => localStorage.removeItem('token');
 
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[char]));
+
 const getAuthHeaders = () => {
     const token = getToken();
     return token ? { 'Authorization': `Bearer ${token}` } : {};
@@ -29,8 +33,6 @@ const showMessage = (elementId, message, isError = false) => {
         el.textContent = message;
         el.style.display = 'block';
         el.className = isError ? 'error' : 'success';
-        setTimeout(() => {
-            el.style.display = 'none';
-        }, 5000);
+        el.setAttribute('role', isError ? 'alert' : 'status');
     }
 };

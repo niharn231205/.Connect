@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const jdText = document.getElementById('jd-text').value;
             const btnMatch = document.getElementById('btn-match');
             
-            btnMatch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing NLP Model...';
+            btnMatch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Comparing skills…';
             btnMatch.disabled = true;
             
             try {
@@ -62,13 +62,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     const ratingText = document.getElementById('match-rating');
                     if (score >= 80) {
                         ratingText.textContent = "Excellent Match! 🚀";
-                        ratingText.style.color = "#10b981";
+                        ratingText.style.color = "#2d6a4f";
                     } else if (score >= 50) {
                         ratingText.textContent = "Good Fit 👍";
                         ratingText.style.color = "var(--accent)";
                     } else {
                         ratingText.textContent = "Low Relevance ⚠️";
-                        ratingText.style.color = "#ef4444";
+                        ratingText.style.color = "#b53535";
                     }
                     
                     // Render Matched Skills
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             missingContainer.innerHTML += `<span class="skill-tag missing"><i class="fas fa-circle-plus"></i> ${skill}</span>`;
                         });
                     } else {
-                        missingContainer.innerHTML = '<span style="color: #10b981; font-size: 0.9rem;">Fantastic! You have all the skills requested in this job description.</span>';
+                        missingContainer.innerHTML = '<span style="color: #2d6a4f; font-size: 0.9rem;">Fantastic! You have all the skills requested in this job description.</span>';
                     }
                     
                     // Render Keywords
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const btnRank = document.getElementById('btn-rank');
-            btnRank.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing NLP Pipelines...';
+            btnRank.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying and comparing resumes…';
             btnRank.disabled = true;
             
             const formData = new FormData();
@@ -186,12 +186,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             else if (candidate.matchPercentage >= 45) matchClass = 'match-medium';
                             
                             const matchedSkillsHtml = candidate.matchedSkills.length > 0
-                                ? candidate.matchedSkills.map(s => `<span class="tag" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); font-size: 0.75rem; margin: 2px;">${s}</span>`).join('')
+                                ? candidate.matchedSkills.map(s => `<span class="tag" style="background: rgba(16, 185, 129, 0.1); color: #2d6a4f; border: 1px solid rgba(16, 185, 129, 0.2); font-size: 0.75rem; margin: 2px;">${s}</span>`).join('')
                                 : '<span style="color:var(--text-secondary); font-size:0.8rem">None</span>';
                                 
                             const missingSkillsHtml = candidate.missingSkills.length > 0
-                                ? candidate.missingSkills.map(s => `<span class="tag" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.75rem; margin: 2px;">${s}</span>`).join('')
-                                : '<span style="color:#10b981; font-size:0.8rem">None</span>';
+                                ? candidate.missingSkills.map(s => `<span class="tag" style="background: rgba(239, 68, 68, 0.1); color: #b53535; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.75rem; margin: 2px;">${s}</span>`).join('')
+                                : '<span style="color:#2d6a4f; font-size:0.8rem">None</span>';
                             
                             const row = document.createElement('tr');
                             row.innerHTML = `
@@ -212,8 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <div style="display: flex; flex-wrap: wrap; max-width: 250px;">${missingSkillsHtml}</div>
                                 </td>
                                 <td>
-                                    <button class="btn btn-secondary" onclick="alert('Interview invitation sent to ${candidate.candidateName}!')" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; margin-bottom: 5px;">Invite</button>
-                                    <button class="btn btn-secondary" onclick="alert('Opening chat room with ${candidate.candidateName}!')" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none;"><i class="fas fa-comments"></i> Chat</button>
+                                    <span style="font-size:0.75rem;color:var(--text-secondary)">Skill comparison only</span>
                                 </td>
                             `;
                             tbody.appendChild(row);

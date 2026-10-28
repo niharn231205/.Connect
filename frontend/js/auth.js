@@ -1,76 +1,51 @@
-// Auth handling logic
-const signupForm = document.getElementById('signup-form');
-const loginForm = document.getElementById('login-form');
-
-if (signupForm) {
-    signupForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        try {
-            const res = await fetch(`${API_URL}/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password })
-            });
-            const data = await res.json();
-
-            if (res.ok) {
-                setToken(data.token);
-                // after signup, go to questions
-                window.location.href = '/questions.html';
-            } else {
-                showMessage('error-msg', data.message || 'Signup failed', true);
-            }
-        } catch (error) {
-            showMessage('error-msg', 'Network error', true);
-        }
-    });
-}
-
-if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        try {
-            const res = await fetch(`${API_URL}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            const data = await res.json();
-
-            if (res.ok) {
-                setToken(data.token);
-                // after login, go to dashboard
-                window.location.href = '/dashboard.html';
-            } else {
-                showMessage('error-msg', data.message || 'Login failed', true);
-            }
-        } catch (error) {
-            showMessage('error-msg', 'Network error', true);
-        }
-    });
-}
-
-// Add password toggle logic
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('toggle-password')) {
-        const passwordInput = e.target.previousElementSibling;
-        if (passwordInput && passwordInput.tagName === 'INPUT') {
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                e.target.classList.remove('fa-eye');
-                e.target.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                e.target.classList.remove('fa-eye-slash');
-                e.target.classList.add('fa-eye');
-            }
-        }
+// Both forms share loading and error handling; keep a failed submission editable.
+["login", "signup"].forEach((mode) => {
+  const form = document.getElementById(`${mode}-form`);
+  if (!form) return;
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = form.querySelector('button[type="submit"]');
+    if (button.disabled) return;
+    const label = button.textContent;
+    button.disabled = true;
+    button.textContent =
+      mode === "login" ? "Signing in…" : "Creating your account…";
+    form.setAttribute("aria-busy", "true");
+    document.getElementById("error-msg").style.display = "none";
+    const body = {
+      email: document.getElementById("email").value.trim(),
+      password: document.getElementById("password").value,
+    };
+    if (mode === "signup")
+      body.name = document.getElementById("name").value.trim();
+    try {
+      const response = await fetch(
+        `${API_URL}/auth/${mode === "signup" ? "register" : "login"}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+      );
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(
+          data.message || "Please check your details and try again.",
+        );
+      setToken(data.token);
+      window.location.href =
+        mode === "signup" ? "/questions.html" : "/dashboard.html";
+    } catch (error) {
+      showMessage(
+        "error-msg",
+        error.message === "Failed to fetch"
+          ? "Could not connect. Check your connection and try again."
+          : error.message,
+        true,
+      );
+      button.disabled = false;
+      button.textContent = label;
+      form.removeAttribute("aria-busy");
     }
+  });
 });

@@ -67,14 +67,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                             max: 100,
                             ticks: {
                                 stepSize: 20,
-                                color: '#a8a29e',
+                                color: '#64635d',
                                 backdropColor: 'transparent',
                                 font: { size: 10 }
                             },
-                            grid: { color: 'rgba(255,255,255,0.08)' },
-                            angleLines: { color: 'rgba(255,255,255,0.08)' },
+                            grid: { color: 'rgba(17,17,15,0.12)' },
+                            angleLines: { color: 'rgba(17,17,15,0.12)' },
                             pointLabels: {
-                                color: '#fafaf9',
+                                color: '#34342e',
                                 font: { size: 11, weight: '500' }
                             }
                         }
@@ -113,11 +113,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         y: {
                             beginAtZero: true,
                             max: 100,
-                            ticks: { color: '#a8a29e', font: { size: 10 } },
+                            ticks: { color: '#64635d', font: { size: 10 } },
                             grid: { color: 'rgba(255,255,255,0.05)' }
                         },
                         x: {
-                            ticks: { color: '#a8a29e', font: { size: 10 }, maxRotation: 45 },
+                            ticks: { color: '#64635d', font: { size: 10 }, maxRotation: 45 },
                             grid: { display: false }
                         }
                     }
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <input type="checkbox" id="skill-cb-${i}" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;"
                         onchange="toggleSkillDone(this, 'skill-label-${i}')">
                     <span id="skill-label-${i}" style="font-size:0.9rem;transition:all 0.2s;">
-                        <i class="fas fa-circle-plus" style="color:#ef4444;margin-right:0.3rem;font-size:0.8rem;"></i>${skill}
+                        <i class="fas fa-circle-plus" style="color:#b53535;margin-right:0.3rem;font-size:0.8rem;"></i>${skill}
                     </span>
                 </label>
             `).join('');
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <h4 style="font-size:0.9rem;margin-bottom:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">
                             <i class="fas fa-list-check" style="color:var(--accent);"></i> Missing Skills Checklist
                         </h4>
-                        ${missingSkills.length ? checkboxesHtml : '<p style="color:#10b981;font-size:0.9rem;"><i class="fas fa-circle-check"></i> None — Resume looks complete!</p>'}
+                        ${missingSkills.length ? checkboxesHtml : '<p style="color:#2d6a4f;font-size:0.9rem;"><i class="fas fa-circle-check"></i> None — Resume looks complete!</p>'}
                     </div>
                     <div>
                         <h4 style="font-size:0.9rem;margin-bottom:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             `;
         } else if (data.resume) {
-            suggestionsBox.innerHTML = `<p style="color:#10b981;"><i class="fas fa-circle-check"></i> Resume analyzed — no major suggestions. <a href="/matcher.html" style="color:var(--accent);">Match it to a job now.</a></p>`;
+            suggestionsBox.innerHTML = `<p style="color:#2d6a4f;"><i class="fas fa-circle-check"></i> Resume analyzed — no major suggestions. <a href="/matcher.html" style="color:var(--accent);">Match it to a job now.</a></p>`;
         }
 
 
@@ -225,7 +225,7 @@ function drawAtsGauge(score) {
     // Background ring
     ctx.beginPath();
     ctx.arc(center, center, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.strokeStyle = 'rgba(17,17,15,0.12)';
     ctx.lineWidth = lineWidth;
     ctx.stroke();
 
@@ -244,7 +244,7 @@ function drawAtsGauge(score) {
         // Background
         ctx.beginPath();
         ctx.arc(center, center, radius, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.strokeStyle = 'rgba(17,17,15,0.12)';
         ctx.lineWidth = lineWidth;
         ctx.stroke();
         // Score
@@ -365,12 +365,12 @@ function toggleSkillDone(checkbox, labelId) {
     if (checkbox.checked) {
         label.style.textDecoration = 'line-through';
         label.style.opacity = '0.45';
-        label.querySelector('i').style.color = '#10b981';
+        label.querySelector('i').style.color = '#2d6a4f';
         label.querySelector('i').className = 'fas fa-circle-check';
     } else {
         label.style.textDecoration = 'none';
         label.style.opacity = '1';
-        label.querySelector('i').style.color = '#ef4444';
+        label.querySelector('i').style.color = '#b53535';
         label.querySelector('i').className = 'fas fa-circle-plus';
     }
 }

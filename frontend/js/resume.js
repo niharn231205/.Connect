@@ -25,6 +25,7 @@ if (resumeForm) {
 
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Extracting and verifying resume…';
         submitBtn.disabled = true;
+        resumeForm.setAttribute('aria-busy', 'true');
         document.getElementById('error-msg').style.display = 'none';
         document.getElementById('success-msg').style.display = 'none';
 
@@ -46,35 +47,37 @@ if (resumeForm) {
                 showMessage('error-msg', data.message || 'Upload failed. Please try again.', true);
                 submitBtn.innerHTML = 'Analyze My Resume';
                 submitBtn.disabled = false;
+                resumeForm.removeAttribute('aria-busy');
             }
         } catch (error) {
             showMessage('error-msg', 'Network error. Is the server running?', true);
             submitBtn.innerHTML = 'Analyze My Resume';
             submitBtn.disabled = false;
+            resumeForm.removeAttribute('aria-busy');
         }
     });
 }
 
 function renderAnalysisResults(data, fileName) {
-    const formCard = document.querySelector('.glass-card');
+    const formCard = document.getElementById('resume-analysis-card');
     if (!formCard) return;
 
     const score = Math.max(0, Math.min(100, Number(data.atsScore) || 0));
-    let scoreColor = '#ef4444';
+    let scoreColor = '#b53535';
     let scoreLabel = 'Needs Improvement';
     let scoreTip = 'Add more quantified achievements and relevant keywords.';
     if (score >= 80) {
-        scoreColor = '#10b981';
+        scoreColor = '#2d6a4f';
         scoreLabel = 'Strong structure';
         scoreTip = 'This heuristic checks structure and keywords; it does not predict hiring outcomes.';
     } else if (score >= 60) {
         scoreColor = '#f59e0b';
         scoreLabel = 'Good';
-        scoreTip = 'A few improvements could significantly boost your chances.';
+        scoreTip = 'Review the suggested keywords and formatting improvements below.';
     }
 
     const skillsHtml = (data.skills || []).map(skill =>
-        `<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.75rem;border-radius:20px;font-size:0.82rem;font-weight:600;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.25);margin:3px;">
+        `<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.75rem;border-radius:20px;font-size:0.82rem;font-weight:600;background:rgba(16,185,129,0.1);color:#2d6a4f;border:1px solid rgba(16,185,129,0.25);margin:3px;">
             <i class="fas fa-check" style="font-size:0.7rem;"></i>${escapeResumeHtml(skill)}
         </span>`
     ).join('');
@@ -90,13 +93,13 @@ function renderAnalysisResults(data, fileName) {
     formCard.innerHTML = `
         <header style="margin-bottom:2rem;display:flex;align-items:center;gap:1rem;">
             <div style="width:48px;height:48px;border-radius:12px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;border:1px solid rgba(16,185,129,0.25);flex-shrink:0;">
-                <i class="fas fa-file-check" style="color:#10b981;font-size:1.3rem;"></i>
+                <i class="fas fa-file-check" style="color:#2d6a4f;font-size:1.3rem;"></i>
             </div>
             <div>
                 <h2 style="margin:0;color:var(--text-primary);font-size:1.4rem;">Analysis Complete</h2>
                 <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-top:0.25rem;">
                     <p style="margin:0;font-size:0.85rem;color:var(--text-secondary);">${escapeResumeHtml(fileName)}</p>
-                    ${data.verification?.isResume === true && data.verification?.provider === 'gemini' ? `<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.2rem 0.55rem;background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);border-radius:12px;font-size:0.75rem;font-weight:600;"><i class="fas fa-robot"></i> Gemini Verified Resume</span>` : ''}
+                    ${data.verification?.isResume === true && data.verification?.provider === 'gemini' ? `<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.2rem 0.55rem;background:rgba(59,130,246,0.12);color:#27598a;border:1px solid rgba(59,130,246,0.3);border-radius:12px;font-size:0.75rem;font-weight:600;"><i class="fas fa-robot"></i> Gemini Verified Resume</span>` : ''}
                 </div>
             </div>
         </header>
@@ -124,7 +127,7 @@ function renderAnalysisResults(data, fileName) {
         <!-- Detected Skills -->
         <div style="margin-bottom:1.5rem;">
             <h4 style="font-size:0.95rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">
-                <i class="fas fa-circle-check" style="color:#10b981;"></i> Detected Skills (${(data.skills||[]).length})
+                <i class="fas fa-circle-check" style="color:#2d6a4f;"></i> Detected Skills (${(data.skills||[]).length})
             </h4>
             <div style="line-height:2;">${skillsHtml || '<span style="color:var(--text-secondary);font-size:0.9rem;">No skills detected. Try uploading a more detailed resume.</span>'}</div>
         </div>
@@ -156,5 +159,8 @@ function renderAnalysisResults(data, fileName) {
             </a>
         </div>
     `;
+    formCard.setAttribute('tabindex', '-1');
+    formCard.setAttribute('aria-label', 'Resume analysis complete');
+    formCard.focus();
 }
 

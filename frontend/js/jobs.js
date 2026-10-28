@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    let existingAnswers = {};
     const token = localStorage.getItem('token');
     if (!token) {
         window.location.href = 'login.html';
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const profileData = await profileRes.json();
+            existingAnswers = profileData.answers || {};
 
             if (!profileData.answers || !profileData.answers.field || !profileData.answers.experienceLevel) {
                 document.getElementById('personalizationModal').style.display = 'flex';
@@ -51,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (job.missingSkills && job.missingSkills.length > 0) {
                     insightHtml = `
                         <div style="margin-top: 1rem; padding: 0.8rem; background: rgba(245, 158, 11, 0.05); border-radius: 8px; border: 1px dashed rgba(245, 158, 11, 0.2);">
-                            <span style="font-size: 0.75rem; color: var(--accent); font-weight: 700; text-transform: uppercase;">Pro Insight:</span>
+                            <span style="font-size: 0.75rem; color: var(--accent); font-weight: 700; text-transform: uppercase;">Skill gap:</span>
                             <span style="font-size: 0.85rem; color: var(--text-secondary);"> You're missing <strong>${job.missingSkills.join(', ')}</strong> in your current resume.</span>
                         </div>
                     `;
@@ -74,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="match-score ${matchClass}">
                             ${job.matchPercentage}%
                         </div>
-                        <span style="font-size: 0.8rem; color: var(--text-muted)">Matching Probability</span>
-                        <button class="apply-btn" onclick="alert('Application Submitted! Recruiters have been notified of your Pro status.')">One-Click Apply</button>
+                        <span style="font-size: 0.8rem; color: var(--text-muted)">Skill overlap</span>
+                        <a class="apply-btn" href="/matcher.html">Compare your resume</a>
                     </div>
                 `;
                 jobList.appendChild(card);
@@ -103,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ 
+                        ...existingAnswers,
                         field: field, 
                         experienceLevel: experience 
                     })

@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentChatUserId = null;
     let connections = [];
+    document.getElementById('searchConnections').addEventListener('input', renderConnections);
 
     // Load connections
     async function loadConnections() {
@@ -44,10 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderConnections() {
         connectionsList.innerHTML = '';
-        connections.forEach(conn => {
+        const query = document.getElementById('searchConnections').value.trim().toLowerCase();
+        const filtered = connections.filter(conn => `${conn.name} ${conn.label || ''}`.toLowerCase().includes(query));
+        if (!filtered.length) connectionsList.textContent = query ? 'No connections match your search.' : 'No accepted connections yet.';
+        filtered.forEach(conn => {
             const li = document.createElement('li');
             li.className = `connection-item ${currentChatUserId === conn.userId ? 'active' : ''}`;
             li.onclick = () => openChat(conn);
+            li.tabIndex = 0;
+            li.setAttribute('role', 'button');
+            li.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openChat(conn); } });
             
             const initial = conn.name.charAt(0).toUpperCase();
 
@@ -63,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function openChat(conn) {
+        document.querySelector('.chat-page-wrapper').classList.add('conversation-open');
         currentChatUserId = conn.userId;
         renderConnections(); // update active state
 
@@ -70,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const initial = conn.name.charAt(0).toUpperCase();
         chatWindow.innerHTML = `
             <div class="chat-header">
+                <button type="button" class="chat-back" aria-label="Back to connections">←</button>
                 <div class="connection-avatar">${initial}</div>
                 <div>
                     <h3 style="margin: 0; font-size: 1.1rem">${conn.name}</h3>
@@ -80,10 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- Messages go here -->
             </div>
             <div class="chat-input-area">
-                <input type="text" class="chat-input" id="messageInput" placeholder="Type a message..." autocomplete="off">
-                <button class="send-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+                <input type="text" class="chat-input" id="messageInput" aria-label="Message" placeholder="Type a message..." autocomplete="off">
+                <button class="send-btn" id="sendBtn" aria-label="Send message"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
             </div>
         `;
+        chatWindow.querySelector('.chat-back').addEventListener('click', () => {
+            document.querySelector('.chat-page-wrapper').classList.remove('conversation-open');
+            document.getElementById('searchConnections').focus();
+        });
 
         // Fetch history
         try {
@@ -132,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         
         msgDiv.innerHTML = `
-            ${msg.text}
+            ${escapeHtml(msg.text)}
             <span class="timestamp">${time} ${isOutgoing ? '<i class="fas fa-check-double tick"></i>' : ''}</span>
         `;
         

@@ -1,49 +1,154 @@
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Upload Resume - .Connect</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <nav>
-        <a href="/dashboard.html" class="logo">.<span>Connect</span>.</a>
-        <div class="nav-links">
-            <a href="/dashboard.html">Dashboard</a>
-            <a href="/leaderboard.html">Leaderboard</a>
-            <a href="/profile.html">Profile</a>
-            <a href="#" onclick="logout()" class="btn btn-secondary" style="padding: 0.4rem 1rem; margin-left: 1rem; font-size: 0.85rem;">Logout</a>
-        </div>
-    </nav>
-    <div class="container center-content animate-fade">
-        <div class="glass-card" style="max-width: 680px; width: 100%;">
-            <header style="margin-bottom: 2rem;">
-                <h2 style="margin-bottom: 0.5rem; color: var(--accent);">Verify Your Resume</h2>
-                <p>Upload your resume/CV to verify and analyze your career profile.</p>
-            </header>
-            
-            <div id="error-msg" class="error" role="alert"></div>
-            <div id="success-msg" class="success" role="status"></div>
-            
-            <form id="resume-form" style="margin-top: 1.5rem;">
-                <div class="form-group">
-                    <label for="resume-file">Resume File (PDF, DOCX, TXT)</label>
-                    <div style="position: relative;">
-                        <input type="file" id="resume-file" class="form-control" accept=".pdf,.docx,.txt" required style="padding: 2.5rem 1.5rem; border: 2px dashed var(--glass-border); background: rgba(255,255,255,0.02); text-align: center;">
-                    </div>
-                </div>
-                <p style="font-size:0.85rem;margin-bottom:1rem;">Only personal resumes/CVs are accepted. Experiment reports, lab manuals, assignments and certificates are not allowed. Maximum 5 MB. Use readable text; scanned PDFs need OCR first. Extracted content is sent to Google Gemini to check the document type. Only accepted resumes are saved to your profile. This does not verify the accuracy of your credentials.</p>
-                <button type="submit" class="btn btn-primary btn-block">Analyze My Resume</button>
-            </form>
-            
-            <div style="display: flex; justify-content: flex-end; margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
-                <button onclick="window.location.href='/questions.html'" class="btn btn-secondary" style="border: none;">Skip for now &rarr;</button>
+    <link href="/css/style.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="/css/studio.css" rel="stylesheet" />
+  </head>
+  <body class="app-page page-resume">
+    <a class="skip-link" href="#app-main">Skip to content</a>
+    <header class="mobile-header">
+      <a class="logo" href="/dashboard.html">.<span>Connect</span>.</a
+      ><button
+        aria-controls="studio-sidebar"
+        aria-expanded="false"
+        aria-label="Open navigation"
+        class="menu-toggle"
+      >
+        <i aria-hidden="true" class="fas fa-bars"></i>
+      </button>
+    </header>
+    <div class="nav-backdrop" hidden=""></div>
+    <aside class="studio-sidebar" id="studio-sidebar">
+      <a aria-label=".Connect home" class="logo" href="/"
+        >.<span>Connect</span>.</a
+      >
+      <div class="studio-label">YOUR CAREER STUDIO</div>
+      <nav aria-label="Workspace">
+        <a href="/dashboard.html"
+          ><i aria-hidden="true" class="fas fa-house"></i
+          ><span>Overview</span></a
+        ><a aria-current="page" href="/resume.html"
+          ><i aria-hidden="true" class="fas fa-file-lines"></i
+          ><span>Your resume</span></a
+        ><a href="/jobs.html"
+          ><i aria-hidden="true" class="fas fa-briefcase"></i
+          ><span>Explore roles</span></a
+        ><a href="/matcher.html"
+          ><i aria-hidden="true" class="fas fa-arrows-left-right"></i
+          ><span>Resume matcher</span></a
+        ><a href="/interview.html"
+          ><i aria-hidden="true" class="fas fa-comment-dots"></i
+          ><span>Interview practice</span></a
+        ><a href="/connect.html"
+          ><i aria-hidden="true" class="fas fa-user-group"></i
+          ><span>Connections</span></a
+        ><a href="/chat.html"
+          ><i aria-hidden="true" class="fas fa-envelope"></i
+          ><span>Messages</span></a
+        ><a href="/leaderboard.html"
+          ><i aria-hidden="true" class="fas fa-ranking-star"></i
+          ><span>Leaderboard</span></a
+        ><a href="/profile.html"
+          ><i aria-hidden="true" class="fas fa-user"></i
+          ><span>Your profile</span></a
+        >
+      </nav>
+      <div class="sidebar-note">
+        <span class="tiny-dot"></span> A little progress, every day.
+      </div>
+      <button class="logout-button" onclick="logout()" type="button">
+        <i aria-hidden="true" class="fas fa-arrow-right-from-bracket"></i> Sign
+        out
+      </button>
+    </aside>
+    <main class="workspace" id="app-main" tabindex="-1">
+      <div class="container center-content animate-fade">
+        <div
+          class="glass-card"
+          id="resume-analysis-card"
+          style="width: 100%; max-width: 800px"
+        >
+          <header style="margin-bottom: 2rem">
+            <h1 style="margin-bottom: 0.5rem; color: var(--accent)">
+              Your story starts here.
+            </h1>
+            <p>
+              A stronger resume starts with a clear picture. Upload yours to
+              find your next improvement.
+            </p>
+          </header>
+          <div class="error" id="error-msg" role="alert"></div>
+          <div class="success" id="success-msg" role="status"></div>
+          <form id="resume-form" style="margin-top: 1.5rem">
+            <div class="form-group">
+              <label for="resume-file">Resume File (PDF, DOCX, TXT)</label>
+              <div class="upload-zone" style="">
+                <input
+                  accept=".pdf,.docx,.txt"
+                  aria-describedby="upload-help selected-file"
+                  class="resume-file-input"
+                  id="resume-file"
+                  required=""
+                  style=""
+                  type="file"
+                />
+                <label class="upload-label" for="resume-file"
+                  ><span class="upload-icon"
+                    ><i
+                      aria-hidden="true"
+                      class="fas fa-arrow-up-from-bracket"
+                    ></i></span
+                  ><strong>Drop your resume here</strong
+                  ><span>or choose a file from your device</span
+                  ><small>PDF, DOCX or TXT · Up to 5 MB</small></label
+                >
+                <p class="selected-file" id="selected-file" role="status">
+                  No file selected
+                </p>
+              </div>
             </div>
+            <p class="upload-help" id="upload-help" style="">
+              Only personal resumes/CVs are accepted. Experiment reports, lab
+              manuals, assignments and certificates are not allowed. Maximum 5
+              MB. Use readable text; scanned PDFs need OCR first. Extracted
+              content is sent to Google Gemini to check the document type. Only
+              accepted resumes are saved to your profile. This does not verify
+              the accuracy of your credentials.
+            </p>
+            <button class="btn btn-primary btn-block" type="submit">
+              Analyze My Resume
+            </button>
+          </form>
+          <div
+            style="
+              display: flex;
+              justify-content: flex-end;
+              margin-top: 2rem;
+              border-top: 1px solid var(--glass-border);
+              padding-top: 1.5rem;
+            "
+          >
+            <button
+              class="btn btn-secondary"
+              onclick="window.location.href='/dashboard.html'"
+              style="border: none"
+            >
+              Continue to overview →
+            </button>
+          </div>
         </div>
-    </div>
+      </div>
+    </main>
     <script src="/js/api.js"></script>
+    <script src="/js/ui.js"></script>
     <script src="/js/resume.js"></script>
-</body>
+  </body>
 </html>
