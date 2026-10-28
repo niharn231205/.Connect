@@ -21,7 +21,7 @@
         <div class="glass-card" style="max-width: 680px; width: 100%;">
             <header style="margin-bottom: 2rem;">
                 <h2 style="margin-bottom: 0.5rem; color: var(--accent);">Verify Your Resume</h2>
-                <p>Upload → extract text → Gemini resume check → profile analysis.</p>
+                <p>Upload your resume/CV to verify and analyze your career profile.</p>
             </header>
             
             <div id="error-msg" class="error" role="alert"></div>
@@ -34,7 +34,7 @@
                         <input type="file" id="resume-file" class="form-control" accept=".pdf,.docx,.txt" required style="padding: 2.5rem 1.5rem; border: 2px dashed var(--glass-border); background: rgba(255,255,255,0.02); text-align: center;">
                     </div>
                 </div>
-                <p style="font-size:0.85rem;margin-bottom:1rem;">Maximum 5 MB. Use readable text; scanned PDFs need OCR first. Extracted content is sent to Google Gemini to identify whether it is a resume/CV. Only accepted resumes are saved to your profile. This does not verify the accuracy of your credentials.</p>
+                <p style="font-size:0.85rem;margin-bottom:1rem;">Only personal resumes/CVs are accepted. Experiment reports, lab manuals, assignments and certificates are not allowed. Maximum 5 MB. Use readable text; scanned PDFs need OCR first. Extracted content is sent to Google Gemini to check the document type. Only accepted resumes are saved to your profile. This does not verify the accuracy of your credentials.</p>
                 <button type="submit" class="btn btn-primary btn-block">Analyze My Resume</button>
             </form>
             
