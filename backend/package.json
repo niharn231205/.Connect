@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "node --test",
-    "start": "node server.js"
+    "start": "node server.js",
+    "setup:python": "node scripts/setup-python.js",
+    "postinstall": "node scripts/setup-python.js --render-only",
+    "prestart": "node scripts/check-python.js"
   },
   "keywords": [],
   "author": "",

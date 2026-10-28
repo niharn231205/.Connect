@@ -2,7 +2,7 @@ services:
   - type: web
     name: connect-app
     env: node
-    buildCommand: cd backend && npm install && python3 -m pip install --break-system-packages -r requirements.txt
+    buildCommand: cd backend && npm ci
     startCommand: cd backend && npm start
     envVars:
       - key: NODE_ENV

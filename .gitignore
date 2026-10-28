@@ -27,3 +27,6 @@ __pycache__/
 # IDEs
 .vscode/
 .idea/
+
+# Project-local Python runtime
+backend/.venv/

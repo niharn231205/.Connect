@@ -87,3 +87,18 @@ Limits: 5 MB per upload, 50 PDF pages, 50,000 extracted characters. Legacy DOC, 
 The displayed structure score is an existing local heuristic, not a Gemini assessment or a prediction of ATS acceptance. Job-specific skill gaps remain in job matching; generic skill-gap guesses were removed from resume analysis. The upload page’s placeholder footer links were removed.
 
 Run backend regression tests with `cd backend && npm test`. Run extraction tests with your virtual environment activated: `python -m unittest discover -s backend/test -p "test_*.py"`. Tests mock Gemini; a real end-to-end provider check requires your API key. API format reference: [Google structured output documentation](https://ai.google.dev/gemini-api/docs/generate-content/structured-output).
+
+## Fixing document processing on Render
+
+The backend requires Python **and** PDF/DOCX packages at runtime, before it can contact Gemini. Render native runtimes include Python tools ([Render runtime documentation](https://render.com/docs/native-runtimes)).
+
+- Build command: `cd backend && npm ci`
+- Start command: `cd backend && npm start`
+- Leave `PYTHON_BIN` unset unless intentionally using a different installed interpreter.
+- Set `GEMINI_API_KEY` in the Render service's Environment settings. Local `.env` files are ignored by Git and are not deployed.
+
+On Render, npm's postinstall hook creates `backend/.venv` and installs the Python requirements there. Both resume extraction and job matching use this environment. `npm start` verifies PDF/DOCX dependencies before starting the web server; a missing interpreter or dependency now fails deployment with an actionable log instead of silently breaking uploads.
+
+For an existing service, deploy these changes with **Clear build cache & deploy**. If the service is not managed by a Blueprint, verify the build/start commands in its dashboard; changing `render.yaml` alone does not update manual service settings. If the service Root Directory is already `backend`, omit `cd backend &&` from both commands.
+
+For local setup, run `cd backend && npm run setup:python` before `npm start`. This installs into a project-local virtual environment without modifying system Python. A stale `PYTHON_BIN=python3` override can bypass this environment; remove it or point it to the intended interpreter.

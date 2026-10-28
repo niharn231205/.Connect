@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { runPython: runPythonParser } = require('../services/pythonService');
 const db = require('../data/database');
 
 const jobsFile = path.join(__dirname, '../data/jobs.json');
@@ -52,28 +52,6 @@ const seedJobs = () => {
     }
 }
 seedJobs();
-
-const runPythonParser = (args) => {
-    return new Promise((resolve, reject) => {
-        const scriptPath = path.join(__dirname, '../nlp_engine.py');
-        const cmd = `python "${scriptPath}" ${args.map(a => `"${a}"`).join(' ')}`;
-        
-        exec(cmd, (error, stdout, stderr) => {
-            if (error) {
-                const cmdFallback = `python3 "${scriptPath}" ${args.map(a => `"${a}"`).join(' ')}`;
-                exec(cmdFallback, (error2, stdout2, stderr2) => {
-                    if (error2) {
-                        reject(new Error(`Python execution failed: ${stderr2 || stderr || error2.message}`));
-                    } else {
-                        resolve(stdout2);
-                    }
-                });
-            } else {
-                resolve(stdout);
-            }
-        });
-    });
-};
 
 const createJob = (req, res) => {
     try {

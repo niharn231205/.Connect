@@ -1,16 +1,11 @@
-const { execFile } = require('child_process');
-const { promisify } = require('util');
-const path = require('path');
 const fs = require('fs/promises');
 const db = require('../data/database');
 const { validateResumeWithGemini } = require('../services/geminiService');
-const execute = promisify(execFile);
+const { runPython } = require('../services/pythonService');
 
 async function runPythonParser(args) {
     try {
-        const { stdout } = await execute(process.env.PYTHON_BIN || 'python3',
-            [path.join(__dirname, '../nlp_engine.py'), ...args],
-            { timeout: 30000, maxBuffer: 2 * 1024 * 1024 });
+        const stdout = await runPython(args);
         const result = JSON.parse(stdout);
         if (result.error) throw Object.assign(new Error(result.error), { status: 422, code: 'UNREADABLE_DOCUMENT' });
         return result;
