@@ -72,7 +72,9 @@ The resume structure score is calculated locally using rules. It is not a Gemini
 
 In the resume matcher, the student can paste a job description and compare it with their accepted resume. The comparison highlights matched skills, missing terms and text similarity. The text-processing code uses TF-IDF and cosine similarity when its machine-learning dependency is available, with a token-vector fallback.
 
-This helps the student decide what to learn or explain more clearly in their resume.”
+In addition to that local comparison, Gemini can suggest three roles to explore. Each role includes a reason, short evidence quoted from the accepted resume, skills to build and a concrete next step. The AI also suggests truthful resume improvements and comments on a pasted job description. A student can explore roles without pasting a job description.
+
+This helps the student decide what to learn or explain more clearly in their resume. The AI advice is separate from the local similarity score and is not a list of live vacancies.”
 
 **Show:** One role card, then a pasted job description and its comparison results.
 
@@ -148,7 +150,7 @@ The leaderboard is a platform activity and progress feature. Its composite score
 
 “I designed the interface to feel like a career studio: consistent navigation, readable typography, clear primary actions and responsive layouts. Forms have labels, loading states and recoverable error messages. Keyboard users can open navigation and use the controls.
 
-The frontend uses HTML, CSS and JavaScript. The backend uses Node.js and Express. Python handles document parsing and text analysis. Gemini provides document classification and the new interview generation and feedback. Socket.IO supports messaging. The project is deployed on Render.”
+The frontend uses HTML, CSS and JavaScript. The backend uses Node.js and Express. Python handles document parsing and text analysis. Gemini provides document classification, resume-based career recommendations, and interview generation and feedback. Socket.IO supports messaging. The project is deployed on Render.”
 
 **Show:** Briefly resize the page to a phone width, or show a phone preview. Only open source code if the teacher asks.
 
@@ -166,7 +168,7 @@ The project supports a cycle: prepare, practice, reflect and improve. Thank you.
 
 **Where exactly is AI used?**
 
-“Gemini classifies resume versus non-resume content, generates interview questions and reference answers, and evaluates written interview responses. Resume structure scoring and text-similarity matching use local rules or NLP methods. I do not describe every calculation as AI.”
+“Gemini classifies resume versus non-resume content, suggests roles and career next steps from an accepted resume, generates interview questions and reference answers, and evaluates written interview responses. Resume structure scoring and text-similarity matching use local rules or NLP methods. I do not describe every calculation as AI.”
 
 **How is a lab report different from a resume if both have a student name and college?**
 

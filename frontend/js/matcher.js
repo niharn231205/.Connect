@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             btnMatch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Comparing skills…';
             btnMatch.disabled = true;
+            window.setCareerComparisonBusy?.(true);
+            // Both analyses are independent: one service failing must not hide the other.
+            const careerRequest = window.requestCareerAdvice?.(jdText);
             
             try {
                 const res = await fetch('/api/jobs/match-jd', {
@@ -90,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             missingContainer.innerHTML += `<span class="skill-tag missing"><i class="fas fa-circle-plus"></i> ${skill}</span>`;
                         });
                     } else {
-                        missingContainer.innerHTML = '<span style="color: #2d6a4f; font-size: 0.9rem;">Fantastic! You have all the skills requested in this job description.</span>';
+                        missingContainer.innerHTML = '<span style="color: #2d6a4f; font-size: 0.9rem;">No missing keywords were detected in this comparison.</span>';
                     }
                     
                     // Render Keywords
@@ -116,8 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 singleError.textContent = "Network error while running NLP analyzer.";
                 singleError.style.display = 'block';
             } finally {
-                btnMatch.innerHTML = '<i class="fas fa-calculator"></i> Match My Resume';
+                await careerRequest;
+                btnMatch.innerHTML = '<i class="fas fa-calculator"></i> Compare + AI advice';
                 btnMatch.disabled = false;
+                window.setCareerComparisonBusy?.(false);
             }
         });
     }

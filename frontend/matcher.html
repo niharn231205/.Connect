@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Resume matcher — .Connect</title>
+    <title>Resume matcher &amp; AI role guidance — .Connect</title>
     <link href="/css/style.css" rel="stylesheet" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -175,6 +175,7 @@
       }
     </style>
     <link href="/css/studio.css" rel="stylesheet" />
+    <link href="/css/career-advice.css" rel="stylesheet" />
   </head>
   <body class="app-page page-matcher">
     <a class="skip-link" href="#app-main">Skip to content</a>
@@ -241,8 +242,8 @@
             A clearer view of your fit.
           </h1>
           <p>
-            Paste job descriptions or upload multiple resumes to perform
-            real-time NLP similarity and skill gap analysis.
+            Compare a job description with your resume, then explore AI role
+            suggestions, skills to build and practical next steps.
           </p>
         </header>
         <!-- Tabs -->
@@ -274,10 +275,15 @@
               ></div>
               <form id="single-match-form">
                 <div class="form-group">
-                  <textarea
+                  <label
+                    for="jd-text"
+                    style="display: block; margin-bottom: 8px"
+                    >Target job description</label
+                  ><textarea
                     aria-label="Paste requirements, duties, and skills here..."
                     class="form-control"
                     id="jd-text"
+                    maxlength="15000"
                     placeholder="Paste requirements, duties, and skills here..."
                     required=""
                     rows="10"
@@ -294,8 +300,20 @@
                   id="btn-match"
                   type="submit"
                 >
-                  <i class="fas fa-calculator"></i> Match My Resume
+                  Compare + AI advice
                 </button>
+                <button
+                  class="btn btn-secondary btn-block career-action"
+                  id="btn-career-advice"
+                  type="button"
+                >
+                  Get AI role suggestions
+                </button>
+                <p class="career-form-help">
+                  You can explore roles without a job description. AI
+                  suggestions use only your accepted resume and the text pasted
+                  here.
+                </p>
               </form>
             </div>
             <div
@@ -326,7 +344,7 @@
                 <span
                   id="match-label"
                   style="font-size: 0.8rem; color: var(--text-secondary)"
-                  >Similarity Score</span
+                  >Text similarity · local NLP</span
                 >
               </div>
               <div style="margin-bottom: 1.5rem">
@@ -399,6 +417,88 @@
               </p>
             </div>
           </div>
+          <section
+            aria-labelledby="career-heading"
+            class="glass-card career-panel"
+            id="career-advice-panel"
+          >
+            <header class="career-heading">
+              <div>
+                <span class="eyebrow">YOUR NEXT POSSIBILITIES</span>
+                <h2 id="career-heading">Where could your resume take you?</h2>
+              </div>
+              <span class="tag">GEMINI CAREER GUIDANCE</span>
+            </header>
+            <p class="career-intro">
+              Explore roles that connect to your existing skills, with evidence
+              from your verified resume and practical ways to move forward.
+            </p>
+            <p class="career-disclosure">
+              Clicking an AI action sends your accepted resume text and any
+              pasted job description to Google Gemini. Contact details are
+              masked where possible. Suggestions are career guidance, not live
+              vacancies, hiring probabilities or guarantees. Add only skills and
+              achievements you can truthfully support.
+            </p>
+            <p
+              aria-live="polite"
+              class="career-status"
+              id="career-status"
+              role="status"
+            >
+              Upload a verified resume, then request AI suggestions. A job
+              description is optional for role exploration.
+            </p>
+            <div
+              class="error career-error"
+              hidden=""
+              id="career-error"
+              role="alert"
+            ></div>
+            <a
+              class="btn btn-secondary"
+              hidden=""
+              href="/resume.html"
+              id="career-upload-link"
+              >Upload or update your resume →</a
+            >
+            <div hidden="" id="career-advice-results">
+              <div class="career-summary">
+                <p id="career-summary-text"></p>
+                <p class="career-context" id="career-context"></p>
+                <p
+                  class="career-stale"
+                  hidden=""
+                  id="career-stale"
+                  role="status"
+                >
+                  The job description has changed. Request new AI advice to
+                  update these suggestions.
+                </p>
+              </div>
+              <h3>Roles to explore</h3>
+              <div class="career-roles" id="career-roles"></div>
+              <div class="career-plan">
+                <section>
+                  <h3>Practical next steps</h3>
+                  <ol id="career-next-steps"></ol>
+                </section>
+                <section>
+                  <h3>Make your resume clearer</h3>
+                  <ul id="career-resume-edits"></ul>
+                </section>
+              </div>
+              <section class="career-job-notes" hidden="" id="career-job-notes">
+                <h3>About this job description</h3>
+                <p id="career-job-notes-text"></p>
+              </section>
+              <p class="career-disclosure">
+                AI advice may miss context or make mistakes. Use the evidence
+                and suggestions as a starting point for your own decisions. The
+                text-similarity score above is calculated separately by the app.
+              </p>
+            </div>
+          </section>
         </div>
         <!-- Tab 2: Recruiter Multiple Resume Ranker -->
         <div class="matcher-section" id="multi-rank">
@@ -540,6 +640,7 @@
     </main>
     <script src="/js/api.js"></script>
     <script src="/js/ui.js"></script>
+    <script src="/js/career-advice.js"></script>
     <script src="/js/matcher.js"></script>
   </body>
 </html>

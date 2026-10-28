@@ -8,10 +8,12 @@ const {
 } = require('../controllers/jobController');
 const { protect } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
+const { careerAdvice } = require('../controllers/careerAdviceController');
 
 router.post('/', protect, createJob);
 router.get('/', protect, getJobs);
 router.post('/match-jd', protect, matchJd);
+router.post('/career-advice', protect, careerAdvice);
 router.post('/rank-resumes', protect, (req, res, next) => {
     upload.array('resumes')(req, res, error => {
         if (!error) return next();
