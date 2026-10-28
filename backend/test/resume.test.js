@@ -3,12 +3,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
-const { validateResumeWithGemini } = require('../services/geminiService');
+const { validateResumeWithGemini: validate } = require('../services/geminiService');
+const validateResumeWithGemini = text => validate(text, { wait: async () => {}, random: () => 0 });
 const { createUploadResume } = require('../controllers/resumeController');
 const resumeText = 'Jane Doe\nEducation: University degree\nProjects: Community library\nSkills: Teaching';
 const accepted = { isResume: true, confidence: 0.95, documentType: 'resume', reason: 'Personal career history.', provider: 'gemini' };
 
-test('Gemini validation handles provider success and failures without fallback', async t => {
+test('Gemini validation handles provider success and failures without accepting unverified content', async t => {
     const originalKey = process.env.GEMINI_API_KEY;
     t.after(() => { if (originalKey === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = originalKey; });
     delete process.env.GEMINI_API_KEY;
@@ -42,10 +43,10 @@ test('Gemini validation handles provider success and failures without fallback',
     await assert.rejects(validateResumeWithGemini(resumeText), { code: 'VERIFICATION_UNAVAILABLE' });
     reply = { candidates: [] };
     await assert.rejects(validateResumeWithGemini(resumeText), { code: 'VERIFICATION_UNAVAILABLE' });
-    for (const httpStatus of [400, 401, 403, 404, 429, 500]) {
+    for (const httpStatus of [400, 401, 403, 404, 429, 500, 503]) {
         status = httpStatus;
         await assert.rejects(validateResumeWithGemini(resumeText), {
-            code: status === 429 ? 'VERIFICATION_RATE_LIMITED' : 'VERIFICATION_UNAVAILABLE'
+            code: status === 429 ? 'VERIFICATION_RATE_LIMITED' : status >= 500 ? 'VERIFICATION_TEMPORARILY_UNAVAILABLE' : 'VERIFICATION_UNAVAILABLE'
         });
     }
     mock.mock.mockImplementation(async () => { throw new Error('timeout'); });
