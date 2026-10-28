@@ -1,6 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { requestGemini } = require('../services/geminiRequest');
+const { selectAlternateModel } = require('../services/geminiModels');
 
 function configure(t, value = 'gemini-2.5-flash') {
     const original = process.env.GEMINI_FALLBACK_MODEL;
@@ -18,6 +19,9 @@ test('503 retries primary then uses alternate with the same complete request', a
     const body = { documentText: 'Entire synthetic document' };
     const result = await requestGemini(body, 'private-test-key', 'gemini-3.8-flash', {
         request: async (url, options) => {
+            if (options.method === 'GET') return { ok: true, json: async () => ({ models: [
+                { name: 'models/gemini-3.5-flash-lite', supportedGenerationMethods: ['generateContent'] }
+            ] }) };
             calls.push(url);
             assert.equal(JSON.parse(options.body).documentText, body.documentText);
             assert.equal(options.headers['x-goog-api-key'], 'private-test-key');
@@ -28,8 +32,8 @@ test('503 retries primary then uses alternate with the same complete request', a
     assert.deepEqual(delays, [1000, 2000]);
     assert.match(calls[0], /gemini-3\.8-flash:generateContent$/);
     assert.equal(calls[0], calls[1]);
-    assert.match(calls[2], /gemini-2\.5-flash:generateContent$/);
-    assert.equal(result.model, 'gemini-2.5-flash');
+    assert.match(calls[2], /gemini-3\.5-flash-lite:generateContent$/);
+    assert.equal(result.model, 'gemini-3.5-flash-lite');
     assert.equal(result.response.status, 200);
 });
 
@@ -37,9 +41,35 @@ test('persistent provider outages stop after three attempts without a success re
     configure(t);
     let calls = 0;
     const result = await requestGemini({}, 'test', 'primary', {
-        request: async () => { calls++; return reply(503); }, wait: async () => {}, random: () => 0
+        request: async () => { calls++; return reply(503); }, wait: async () => {}, random: () => 0,
+        selectAlternate: async () => 'gemini-3.5-flash-lite'
     });
     assert.equal(calls, 3); assert.equal(result.response.status, 503);
+});
+
+test('model discovery ignores unavailable preferred models and non-text models', async () => {
+    const selected = await selectAlternateModel('private-key', 'gemini-3.8-flash', 'gemini-2.5-flash', {
+        timeout: 5000,
+        request: async (url, options) => {
+            assert.equal(options.method, 'GET'); assert.ok(!url.includes('private-key'));
+            assert.equal(options.headers['x-goog-api-key'], 'private-key');
+            return { ok: true, json: async () => ({ models: [
+                { name: 'models/gemini-3.8-flash', supportedGenerationMethods: ['generateContent'] },
+                { name: 'models/gemini-3.1-flash-lite', supportedGenerationMethods: ['generateContent'] },
+                { name: 'models/gemini-3.5-flash-lite', supportedGenerationMethods: ['generateContent'] },
+                { name: 'models/gemini-3.8-flash-tts', supportedGenerationMethods: ['generateContent'] },
+                { name: 'models/gemini-4.0-flash', supportedGenerationMethods: ['embedContent'] }
+            ] }) };
+        }
+    });
+    assert.equal(selected, 'gemini-3.5-flash-lite');
+});
+
+test('model discovery failure cannot fabricate a model verdict', async () => {
+    const result = await selectAlternateModel('test', 'primary', 'configured-alternate', {
+        timeout: 5000, request: async () => { throw new Error('offline'); }
+    });
+    assert.equal(result, 'configured-alternate');
 });
 
 test('authentication, model and bad-request errors are never retried', async t => {

@@ -1,16 +1,23 @@
 const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504]);
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+const { selectAlternateModel } = require('./geminiModels');
 
 // At most two primary attempts and one alternate-model attempt, within 45 seconds.
 // Every attempt still asks Gemini for a full structured verdict; no local acceptance fallback.
 async function requestGemini(body, apiKey, primaryModel, {
-    request = globalThis.fetch, wait = delay, random = Math.random, now = Date.now
+    request = globalThis.fetch, wait = delay, random = Math.random, now = Date.now,
+    selectAlternate = selectAlternateModel
 } = {}) {
-    const alternate = process.env.GEMINI_FALLBACK_MODEL?.trim() || 'gemini-2.5-flash';
+    const alternate = process.env.GEMINI_FALLBACK_MODEL?.trim() || 'gemini-3.5-flash-lite';
     const models = [primaryModel, primaryModel];
     if (alternate !== 'none') models.push(alternate);
     const deadline = now() + 45000;
     for (let attempt = 0; attempt < models.length; attempt++) {
+        if (attempt === 2) {
+            const timeout = Math.min(5000, deadline - now());
+            if (timeout <= 0) throw new DOMException('Verification timed out', 'TimeoutError');
+            models[attempt] = await selectAlternate(apiKey, primaryModel, alternate, { request, timeout });
+        }
         const remaining = deadline - now();
         if (remaining <= 0) throw new DOMException('Verification timed out', 'TimeoutError');
         let response;
