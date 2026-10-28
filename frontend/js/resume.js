@@ -1,3 +1,7 @@
+function escapeResumeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
 checkAuth();
 
 const resumeForm = document.getElementById('resume-form');
@@ -14,7 +18,12 @@ if (resumeForm) {
             return;
         }
 
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing Resume...';
+        if (!/\.(pdf|docx|txt)$/i.test(file.name) || file.size > 5 * 1024 * 1024) {
+            showMessage('error-msg', 'Choose a PDF, DOCX or TXT file, maximum 5 MB.', true);
+            return;
+        }
+
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Extracting and verifying resume…';
         submitBtn.disabled = true;
         document.getElementById('error-msg').style.display = 'none';
         document.getElementById('success-msg').style.display = 'none';
@@ -50,14 +59,14 @@ function renderAnalysisResults(data, fileName) {
     const formCard = document.querySelector('.glass-card');
     if (!formCard) return;
 
-    const score = data.atsScore || 0;
+    const score = Math.max(0, Math.min(100, Number(data.atsScore) || 0));
     let scoreColor = '#ef4444';
     let scoreLabel = 'Needs Improvement';
     let scoreTip = 'Add more quantified achievements and relevant keywords.';
     if (score >= 80) {
         scoreColor = '#10b981';
-        scoreLabel = 'Excellent!';
-        scoreTip = 'Your resume is well-optimized for ATS systems.';
+        scoreLabel = 'Strong structure';
+        scoreTip = 'This heuristic checks structure and keywords; it does not predict hiring outcomes.';
     } else if (score >= 60) {
         scoreColor = '#f59e0b';
         scoreLabel = 'Good';
@@ -66,21 +75,13 @@ function renderAnalysisResults(data, fileName) {
 
     const skillsHtml = (data.skills || []).map(skill =>
         `<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.75rem;border-radius:20px;font-size:0.82rem;font-weight:600;background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.25);margin:3px;">
-            <i class="fas fa-check" style="font-size:0.7rem;"></i>${skill}
+            <i class="fas fa-check" style="font-size:0.7rem;"></i>${escapeResumeHtml(skill)}
         </span>`
     ).join('');
 
-    const missingSkillsHtml = (data.suggestions && data.suggestions.missingSkills && data.suggestions.missingSkills.length)
-        ? data.suggestions.missingSkills.map(skill =>
-            `<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.75rem;border-radius:20px;font-size:0.82rem;font-weight:600;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.25);margin:3px;">
-                <i class="fas fa-plus" style="font-size:0.7rem;"></i>${skill}
-            </span>`
-        ).join('')
-        : '<span style="color:#10b981;font-size:0.9rem;">None identified — great job!</span>';
-
     const keywordsHtml = (data.suggestions && data.suggestions.keywordsToAdd && data.suggestions.keywordsToAdd.length)
         ? data.suggestions.keywordsToAdd.map(kw =>
-            `<span style="display:inline-block;padding:0.3rem 0.7rem;border-radius:20px;font-size:0.8rem;background:rgba(245,158,11,0.08);color:var(--accent);border:1px solid rgba(245,158,11,0.2);margin:3px;">${kw}</span>`
+            `<span style="display:inline-block;padding:0.3rem 0.7rem;border-radius:20px;font-size:0.8rem;background:rgba(245,158,11,0.08);color:var(--accent);border:1px solid rgba(245,158,11,0.2);margin:3px;">${escapeResumeHtml(kw)}</span>`
         ).join('')
         : '<span style="color:var(--text-secondary);font-size:0.9rem;">—</span>';
 
@@ -93,11 +94,16 @@ function renderAnalysisResults(data, fileName) {
             </div>
             <div>
                 <h2 style="margin:0;color:var(--text-primary);font-size:1.4rem;">Analysis Complete</h2>
-                <p style="margin:0;font-size:0.85rem;color:var(--text-secondary);">${fileName}</p>
+                <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-top:0.25rem;">
+                    <p style="margin:0;font-size:0.85rem;color:var(--text-secondary);">${escapeResumeHtml(fileName)}</p>
+                    ${data.verification?.isResume === true && data.verification?.provider === 'gemini' ? `<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.2rem 0.55rem;background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);border-radius:12px;font-size:0.75rem;font-weight:600;"><i class="fas fa-robot"></i> Gemini Verified Resume</span>` : ''}
+                </div>
             </div>
         </header>
 
-        <!-- ATS Score Ring -->
+        <p style="margin-bottom:1rem;">${escapeResumeHtml(data.verification?.reason || '')}</p>
+        <p style="font-size:0.85rem;">Gemini classifies the document type. The score below is a local heuristic, not a Gemini rating.</p>
+        <!-- Structure Score -->
         <div style="text-align:center;padding:1.5rem;background:rgba(255,255,255,0.02);border-radius:16px;border:1px solid var(--glass-border);margin-bottom:1.5rem;">
             <div style="position:relative;width:130px;height:130px;margin:0 auto 1rem;">
                 <svg viewBox="0 0 130 130" style="transform:rotate(-90deg);width:130px;height:130px;">
@@ -111,7 +117,7 @@ function renderAnalysisResults(data, fileName) {
                     <div style="font-size:0.7rem;color:var(--text-secondary);">/ 100</div>
                 </div>
             </div>
-            <h4 style="color:${scoreColor};margin-bottom:0.3rem;">${scoreLabel} ATS Score</h4>
+            <h4 style="color:${scoreColor};margin-bottom:0.3rem;">${scoreLabel} Structure Score</h4>
             <p style="font-size:0.85rem;color:var(--text-secondary);max-width:320px;margin:0 auto;">${scoreTip}</p>
         </div>
 
@@ -123,18 +129,10 @@ function renderAnalysisResults(data, fileName) {
             <div style="line-height:2;">${skillsHtml || '<span style="color:var(--text-secondary);font-size:0.9rem;">No skills detected. Try uploading a more detailed resume.</span>'}</div>
         </div>
 
-        <!-- Skill Gaps -->
-        <div style="margin-bottom:1.5rem;">
-            <h4 style="font-size:0.95rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">
-                <i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Skill Gaps to Address
-            </h4>
-            <div style="line-height:2;">${missingSkillsHtml}</div>
-        </div>
-
         <!-- Keywords -->
         <div style="margin-bottom:1.5rem;">
             <h4 style="font-size:0.95rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">
-                <i class="fas fa-tags" style="color:var(--accent);"></i> Keywords to Add
+                <i class="fas fa-tags" style="color:var(--accent);"></i> Suggested Improvements
             </h4>
             <div style="line-height:2;">${keywordsHtml}</div>
         </div>
@@ -144,9 +142,10 @@ function renderAnalysisResults(data, fileName) {
             <h4 style="font-size:0.85rem;margin-bottom:0.4rem;color:var(--accent);">
                 <i class="fas fa-info-circle"></i> Formatting Note
             </h4>
-            <p style="font-size:0.85rem;color:var(--text-secondary);margin:0;">${formatting}</p>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin:0;">${escapeResumeHtml(formatting)}</p>
         </div>
 
+        <p><a href="/resume.html">Upload another resume</a></p>
         <!-- Action Buttons -->
         <div style="display:flex;gap:1rem;flex-wrap:wrap;">
             <a href="/dashboard.html" class="btn btn-primary" style="flex:1;text-align:center;">

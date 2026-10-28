@@ -3,9 +3,7 @@ import os
 import json
 import re
 import math
-import zlib
 import zipfile
-import xml.etree.ElementTree as ET
 
 # Try importing external libraries, set flags if unavailable
 HAS_PYPDF2 = False
@@ -19,36 +17,6 @@ HAS_DOCX = False
 try:
     import docx
     HAS_DOCX = True
-except ImportError:
-    pass
-
-HAS_SKLEARN = False
-try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.metrics.pairwise import cosine_similarity
-    HAS_SKLEARN = True
-except ImportError:
-    pass
-
-HAS_NLTK = False
-try:
-    import nltk
-    from nltk.corpus import stopwords
-    from nltk.tokenize import word_tokenize
-    # Ensure they are downloaded
-    try:
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        nltk.download('punkt', quiet=True)
-    try:
-        nltk.data.find('tokenizers/punkt_tab')
-    except LookupError:
-        nltk.download('punkt_tab', quiet=True)
-    try:
-        nltk.data.find('corpora/stopwords')
-    except LookupError:
-        nltk.download('stopwords', quiet=True)
-    HAS_NLTK = True
 except ImportError:
     pass
 
@@ -141,129 +109,43 @@ SKILL_DICTIONARY = {
 }
 
 def extract_text_from_pdf(pdf_path):
-    """Extracts text from a PDF file using PyPDF2 with a robust pure-Python stream fallback."""
-    text = ""
-    # Method 1: Try PyPDF2 if available
-    if HAS_PYPDF2:
-        try:
-            with open(pdf_path, 'rb') as file:
-                reader = PyPDF2.PdfReader(file)
-                for page_num in range(len(reader.pages)):
-                    page = reader.pages[page_num]
-                    page_text = page.extract_text()
-                    if page_text:
-                        text += page_text + "\n"
-        except Exception:
-            pass
+    if not HAS_PYPDF2:
+        raise RuntimeError("PDF parser is not installed")
+    with open(pdf_path, 'rb') as source:
+        if source.read(5) != b'%PDF-':
+            raise ValueError("Not a PDF")
+        source.seek(0)
+        reader = PyPDF2.PdfReader(source)
+        if reader.is_encrypted or len(reader.pages) > 50:
+            raise ValueError("Encrypted or oversized PDF")
+        return "\n".join(page.extract_text() or "" for page in reader.pages)
 
-    # Method 2: If PyPDF2 returned empty or is not installed, parse PDF content streams directly
-    if not text.strip():
-        try:
-            with open(pdf_path, 'rb') as f:
-                content = f.read()
-
-            text_chunks = []
-            # Find and decompress all FlateDecode streams
-            streams = re.findall(rb"stream[\r\n]+(.*?)[\r\n]+endstream", content, re.DOTALL)
-            for s in streams:
-                decompressed = None
-                try:
-                    decompressed = zlib.decompress(s)
-                except Exception:
-                    try:
-                        decompressed = zlib.decompress(s, -15)
-                    except Exception:
-                        decompressed = s
-
-                if decompressed:
-                    # Match single string outputs: (Text) Tj, ' or "
-                    tj_matches = re.findall(rb"\(((?:[^()\\]|\\.)*)\)\s*(?:Tj|'|\")", decompressed)
-                    for m in tj_matches:
-                        try:
-                            text_chunks.append(m.decode('latin1', errors='ignore'))
-                        except Exception:
-                            pass
-
-                    # Match kerning array text: [(T) 10 (e) 10 (x)] TJ
-                    tj_array = re.findall(rb"\[(.*?)\]\s*TJ", decompressed, re.DOTALL)
-                    for arr in tj_array:
-                        parts = re.findall(rb"\(((?:[^()\\]|\\.)*)\)", arr)
-                        for p in parts:
-                            try:
-                                text_chunks.append(p.decode('latin1', errors='ignore'))
-                            except Exception:
-                                pass
-
-            if text_chunks:
-                extracted = " ".join(text_chunks)
-                # Unescape PDF escape codes
-                extracted = re.sub(r'\\[0-7]{1,3}', ' ', extracted)
-                extracted = extracted.replace(r'\(', '(').replace(r'\)', ')').replace(r'\\', '\\')
-                text = extracted
-            else:
-                # Method 3: Fallback to readable ASCII/UTF-8 string scanning
-                strings = re.findall(rb"[A-Za-z0-9@.,:+\-\s]{4,}", content)
-                filtered = []
-                for s in strings:
-                    try:
-                        dec = s.decode('latin1', errors='ignore').strip()
-                        if len(dec) > 3 and not dec.startswith('Font') and not dec.startswith('obj') and not dec.startswith('xref'):
-                            filtered.append(dec)
-                    except Exception:
-                        pass
-                text = " ".join(filtered)
-        except Exception:
-            pass
-
-    return text
 
 def extract_text_from_docx(docx_path):
-    """Extracts text from a DOCX file using python-docx or standard library zipfile."""
-    text = ""
-    # Method 1: Try python-docx if available
-    if HAS_DOCX:
-        try:
-            doc = docx.Document(docx_path)
-            for para in doc.paragraphs:
-                text += para.text + "\n"
-            for table in doc.tables:
-                for row in table.rows:
-                    for cell in row.cells:
-                        text += cell.text + " "
-                    text += "\n"
-        except Exception:
-            pass
+    if not HAS_DOCX:
+        raise RuntimeError("DOCX parser is not installed")
+    with zipfile.ZipFile(docx_path) as archive:
+        if sum(info.file_size for info in archive.infolist()) > 20 * 1024 * 1024:
+            raise ValueError("Expanded DOCX is too large")
+    document = docx.Document(docx_path)
+    parts = [p.text for p in document.paragraphs]
+    parts += [cell.text for table in document.tables for row in table.rows for cell in row.cells]
+    return "\n".join(parts)
 
-    # Method 2: Zero-dependency fallback using zipfile and XML parsing
-    if not text.strip():
-        try:
-            with zipfile.ZipFile(docx_path) as z:
-                xml_content = z.read('word/document.xml')
-                tree = ET.fromstring(xml_content)
-                nodes = [node.text for node in tree.iter() if node.tag.endswith('}t') and node.text]
-                text = " ".join(nodes)
-        except Exception:
-            pass
-
-    return text
 
 def extract_text(file_path):
-    """Helper to route extraction based on file extension."""
-    if not os.path.exists(file_path):
-        return ""
-    
     ext = os.path.splitext(file_path)[1].lower()
     if ext == '.pdf':
         return extract_text_from_pdf(file_path)
-    elif ext in ['.docx', '.doc']:
+    if ext == '.docx':
         return extract_text_from_docx(file_path)
-    else:
-        # Try reading as plain text
-        try:
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-                return f.read()
-        except:
-            return ""
+    if ext == '.txt':
+        with open(file_path, encoding='utf-8-sig') as source:
+            text = source.read()
+        if any(ord(c) < 32 and c not in "\n\r\t" for c in text):
+            raise ValueError("Not a text document")
+        return text
+    raise ValueError("Unsupported document format")
 
 def preprocess_text(text):
     """Cleans text: tokenization, lowercase, stopword removal, lemmatization."""
@@ -274,14 +156,9 @@ def preprocess_text(text):
     text = text.lower()
     text = re.sub(r'[^\w\s\-\.]', ' ', text)
     
-    # Tokenization
-    if HAS_NLTK:
-        tokens = word_tokenize(text)
-        stop_words = set(stopwords.words('english'))
-    else:
-        tokens = text.split()
-        stop_words = STOPWORDS_FALLBACK
-        
+    tokens = text.split()
+    stop_words = STOPWORDS_FALLBACK
+
     # Filter stopwords and short tokens
     cleaned_tokens = []
     for token in tokens:
@@ -371,7 +248,13 @@ def calculate_similarity(text1, text2):
     if not tokens1 or not tokens2:
         return 0
         
-    if HAS_SKLEARN:
+    try:
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+    except ImportError:
+        TfidfVectorizer = None
+
+    if TfidfVectorizer is not None:
         try:
             vectorizer = TfidfVectorizer(stop_words='english')
             tfidf = vectorizer.fit_transform([" ".join(tokens1), " ".join(tokens2)])
@@ -430,8 +313,7 @@ def analyze_resume(resume_text):
         suggestions_list.append("Integrate more technical skill keywords matching your industry.")
         
     missing_skills = []
-    if len(skills) < 5:
-        missing_skills = ["Docker", "AWS", "SQL", "Unit Testing", "Git"]
+    # Skill gaps require a target job; do not invent unrelated requirements.
         
     formatting_critique = "Structure is decent, but could use more quantifiable metrics."
     if ats_score >= 85:
@@ -459,8 +341,6 @@ def main():
             "status": "active",
             "has_pypdf2": HAS_PYPDF2,
             "has_docx": HAS_DOCX,
-            "has_sklearn": HAS_SKLEARN,
-            "has_nltk": HAS_NLTK,
             "extracted_skills": extract_skills(test_text),
             "clean_tokens": preprocess_text(test_text)[:5]
         }, indent=2))
@@ -472,7 +352,20 @@ def main():
 
     mode = sys.argv[1]
     
-    if mode == '--resume':
+    if mode == '--extract':
+        try:
+            text = extract_text(sys.argv[2])
+            if len(text.strip()) < 40:
+                raise ValueError("No readable text")
+            if len(text) > 50000:
+                raise ValueError("Document too long")
+            print(json.dumps({"extractedText": text}))
+        except RuntimeError:
+            raise
+        except Exception:
+            print(json.dumps({"error": "Cannot read this document. Upload a text-based PDF, DOCX or UTF-8 TXT resume (maximum 50 pages / 50,000 characters). Scanned or encrypted PDFs are unsupported."}))
+
+    elif mode == '--resume':
         file_path = sys.argv[2]
         if not os.path.exists(file_path):
             print(json.dumps({"error": f"File not found: {file_path}"}))
