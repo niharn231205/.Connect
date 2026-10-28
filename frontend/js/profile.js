@@ -53,7 +53,7 @@ const renderProfile = async () => {
             const resumeStatus = document.getElementById('resume-status');
             const resumeLink = document.getElementById('resume-link');
             if (data.resume) {
-                resumeStatus.innerHTML = `<p>Latest resume: <strong>${data.resume}</strong></p>`;
+                resumeStatus.textContent = `Latest resume: ${typeof data.resume === 'string' ? data.resume : data.resume.filename || data.resume.originalName || 'Resume uploaded'}`;
                 resumeLink.style.display = 'inline-block';
                 resumeLink.innerText = 'Update Resume';
             } else {
@@ -85,10 +85,7 @@ function renderSkillCloud(data) {
     container.innerHTML = '';
 
     // Collect skills from interests and resume keywords
-    const skills = new Set(data.answers?.interests || []);
-    if (data.suggestions?.keywordsToAdd) {
-        data.suggestions.keywordsToAdd.slice(0, 5).forEach(k => skills.add(k));
-    }
+    const skills = new Set([...(data.skills || []), ...(data.answers?.interests || [])]);
 
     if (skills.size === 0) {
         container.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.9rem;">Set interests or upload resume to see skills.</p>';
@@ -110,14 +107,14 @@ function renderSkillCloud(data) {
             transition: all 0.3s;
         `;
         skillCard.innerHTML = `
-            <span style="font-weight: 600; font-size: 0.95rem;">${skill}</span>
+            <span style="font-weight: 600; font-size: 0.95rem;">${escapeHtml(skill)}</span>
             <div style="display: flex; align-items: center; gap: 0.4rem; color: var(--accent); background: rgba(245, 158, 11, 0.1); padding: 0.2rem 0.6rem; border-radius: 999px;">
                 <i class="fas fa-thumbs-up" style="font-size: 0.8rem;"></i>
                 <span style="font-weight: 700; font-size: 0.85rem;" id="count-${skill.replace(/\s+/g, '-')}">${count}</span>
             </div>
         `;
         
-        skillCard.onclick = () => endorseSkill(skill, skill.replace(/\s+/g, '-'));
+        skillCard.style.cursor = 'default';
         container.appendChild(skillCard);
     });
 }
@@ -164,12 +161,17 @@ function renderPortfolio(portfolio) {
     }
 
     portfolio.forEach(item => {
+        let projectUrl = '';
+        try {
+            const url = new URL(item.link);
+            if (['https:', 'http:'].includes(url.protocol)) projectUrl = url.href;
+        } catch (_) { /* A missing or invalid link is rendered as plain project content. */ }
         const div = document.createElement('div');
         div.style.cssText = 'background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 1rem;';
         div.innerHTML = `
-            <h3 style="margin: 0 0 0.5rem 0; color: var(--primary-color)">${item.title}</h3>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">${item.description}</p>
-            ${item.link ? `<a href="${item.link}" target="_blank" style="color: var(--text-main); text-decoration: none; font-size: 0.9rem;"><i class="fas fa-external-link-alt"></i> View Project</a>` : ''}
+            <h3 style="margin: 0 0 0.5rem 0; color: var(--primary-color)">${escapeHtml(item.title)}</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">${escapeHtml(item.description)}</p>
+            ${projectUrl ? `<a href="${escapeHtml(projectUrl)}" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); text-decoration: none; font-size: 0.9rem;"><i class="fas fa-external-link-alt"></i> View Project</a>` : ''}
         `;
         grid.appendChild(div);
     });

@@ -1,177 +1,550 @@
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>.Connect - The Next Gen Career Growth Platform</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-
-<body>
-    <nav>
-        <a href="/" class="logo">.<span>Connect</span>.</a>
-        <div class="nav-links">
-            <a href="/login.html">Login</a>
-            <a href="/signup.html" class="btn btn-primary" style="margin-left: 1rem;">Get Started</a>
-        </div>
-    </nav>
-
-    <main>
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>.Connect - Career Studio</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="/css/home.css" rel="stylesheet" />
+    <meta
+      content="Build a stronger resume, practice written interviews and grow your professional network with .Connect Career Studio."
+      name="description"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="flex flex-col min-h-screen">
+      <!-- Global Public Nav -->
+      <div
+        class="border-b border-rule sticky top-0 z-50 bg-[#F4F1E9]/95 backdrop-blur-md"
+      >
+        <nav
+          class="sd-connect-public-nav"
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--public-nav-padding, 20px 40px);
+            background: var(--nav-bg, rgba(12, 10, 9, 0.8));
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid
+              var(--glass-border, rgba(255, 255, 255, 0.1));
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            font-family: &quot;Plus Jakarta Sans&quot;, sans-serif;
+          "
+        >
+          <a
+            aria-label=".Connect home"
+            href="/"
+            id="public-nav-home"
+            style="
+              white-space: nowrap;
+              min-height: 44px;
+              display: flex;
+              align-items: center;
+              font-size: var(--public-logo-size, 25.6px);
+              font-weight: 800;
+              color: var(--text-primary, #fafaf9);
+              text-decoration: none;
+              letter-spacing: -1px;
+            "
+            >.<span style="color: var(--accent, #f59e0b)">Connect</span>.</a
+          >
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: var(--public-nav-gap, 16px);
+            "
+          >
+            <a
+              href="/login.html"
+              id="public-nav-login"
+              style="
+                white-space: nowrap;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+                color: var(--text-secondary, #a8a29e);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: var(--public-link-font-size, 15.2px);
+                padding: 12px 0;
+              "
+              >Login</a
+            >
+            <a
+              href="/signup.html"
+              id="public-nav-signup"
+              style="
+                white-space: nowrap;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: var(--public-button-padding, 12.8px 28.8px);
+                border-radius: var(--public-button-radius, 12px);
+                font-weight: 600;
+                text-align: center;
+                text-decoration: none;
+                font-size: var(--public-link-font-size, 15.2px);
+                background: var(
+                  --public-button-bg,
+                  linear-gradient(135deg, #f59e0b, #d97706)
+                );
+                color: var(--public-button-text, #fff);
+                box-shadow: var(
+                  --public-button-shadow,
+                  0 4px 15px rgba(245, 158, 11, 0.3)
+                );
+              "
+              >Get Started</a
+            >
+          </div>
+        </nav>
+      </div>
+      <main class="flex-grow">
         <!-- Hero Section -->
-        <section class="hero animate-fade">
-            <div class="tag" style="margin-bottom: 2rem;">V2.0 PRO SERIES IS LIVE</div>
-            <h1>From your first connection to your first offer , <br> <span>we have got you.</span></h1>
-            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 2.5rem;">The only platform that combines ATS
-                analysis, AI-powered mock interviews, and peer networking to accelerate your career growth.</p>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <a href="/signup.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">Start
-                    Your Journey</a>
-                <a href="#features" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">Explore
-                    Features</a>
+        <section class="container-custom py-8 md:py-16 overflow-hidden">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+          >
+            <div class="lg:col-span-6 z-10">
+              <div
+                class="text-[11px] font-bold tracking-widest text-[#64635D] uppercase mb-4 md:mb-6"
+              >
+                CAREER GROWTH, MADE PERSONAL
+              </div>
+              <h1 class="font-georgia hero-heading mb-6 text-[#11110F]">
+                Your next <br />
+                <i class="text-[#64635D]">chapter.</i>
+              </h1>
+              <p
+                class="text-base md:text-lg text-[#64635D] mb-8 max-w-md leading-relaxed"
+              >
+                Make your resume stronger, practice your answers and meet people
+                in your field. One place for your next move.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <a class="btn-primary" href="/signup.html" id="hero-cta-signup"
+                  >Create your profile</a
+                >
+                <a class="btn-secondary" href="#journey" id="hero-cta-explore"
+                  >See how it works</a
+                >
+              </div>
             </div>
-        </section>
-
-        <!-- Features Bento Grid -->
-        <section id="features" class="container">
-            <div style="text-align: center; margin-bottom: 4rem;">
-                <h2 style="font-size: 2.5rem;">Everything you need to <span style="color: var(--accent);">excel.</span>
-                </h2>
-                <p>Built for the modern professional who doesn't settle for "good enough."</p>
-            </div>
-
-            <div class="grid">
-                <div class="glass-card">
-                    <i class="fas fa-file-invoice"
-                        style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
-                    <h3>Precision ATS Scoring</h3>
-                    <p>Upload your resume and get an instant score. We don't just give a number; we tell you exactly
-                        what keywords are missing and how to fix your formatting.</p>
-                </div>
-                <div class="glass-card">
-                    <i class="fas fa-robot" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
-                    <h3>AI Interview Tutor</h3>
-                    <p>Practice with real-world questions from Google, Amazon, and Meta. Get real-time feedback and a
-                        "Career Readiness Report" after every session.</p>
-                </div>
-                <div class="glass-card">
-                    <i class="fas fa-users" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
-                    <h3>The Connect-Tribe</h3>
-                    <p>Match with peers in your specific field. Endorse each other's skills and build a network that
-                        actually helps you get hired.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Pathways Section -->
-        <section style="background: rgba(28, 25, 23, 0.5); padding: 8rem 0; margin-top: 4rem;">
-            <div class="container"
-                style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
-                <div>
-                    <h2 style="font-size: 3rem; line-height: 1.1;">Tailored paths for <span
-                            style="color: var(--accent);">every goal.</span></h2>
-                    <p style="font-size: 1.1rem; margin-top: 1.5rem;">Whether you're a developer breaking into Big Tech
-                        or a designer looking for your first startup role, .Connect personalizes your experience from
-                        day one.</p>
-                    <ul style="list-style: none; margin-top: 2rem;">
-                        <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
-                            <i class="fas fa-check-circle" style="color: var(--accent);"></i>
-                            <span>Customized interview question banks</span>
-                        </li>
-                        <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
-                            <i class="fas fa-check-circle" style="color: var(--accent);"></i>
-                            <span>Skill endorsements from verified peers</span>
-                        </li>
-                        <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
-                            <i class="fas fa-check-circle" style="color: var(--accent);"></i>
-                            <span>Real-time job matching based on your profile</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="glass-card"
-                    style="padding: 0; overflow: hidden; height: 400px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%);">
-                    <div style="font-size: 10rem; opacity: 0.1; color: var(--accent);">
-                        <i class="fas fa-rocket"></i>
+            <div
+              class="lg:col-span-6 relative h-[380px] md:h-[480px] mt-8 lg:mt-0"
+              id="hero-art"
+            >
+              <!-- Composed Product Scene -->
+              <div
+                class="absolute inset-0 flex items-center justify-center lg:justify-end"
+              >
+                <div
+                  class="relative w-full max-w-[480px] h-full"
+                  id="hero-product-scene"
+                >
+                  <!-- Ink Studio Board Foundation -->
+                  <div
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] md:w-[420px] h-[320px] md:h-[380px] bg-[#11110F] rounded-[24px] shadow-2xl overflow-hidden"
+                    id="hero-board"
+                  >
+                    <!-- Amber Connector Detail -->
+                    <div
+                      class="absolute -right-10 -top-10 w-40 h-40 bg-[#F59E0B] rounded-full opacity-20 blur-2xl"
+                    ></div>
+                    <div
+                      class="absolute bottom-0 left-8 w-24 h-1 bg-[#F59E0B]"
+                    ></div>
+                    <div class="p-6 md:p-8 flex flex-col h-full">
+                      <div
+                        class="flex items-center justify-between mb-6"
+                        id="hero-board-label"
+                      >
+                        <div class="w-2 h-2 rounded-full bg-[#64635D]"></div>
+                        <div
+                          class="text-[#FAF8F2] text-xs font-medium tracking-wide"
+                        >
+                          YOUR STUDIO
+                        </div>
+                        <div class="w-2 h-2 rounded-full bg-[#64635D]"></div>
+                      </div>
+                      <!-- Practice Prompt Panel inside Board -->
+                      <div
+                        class="mt-auto bg-[#1C1C18] border border-[#3A3935] rounded-xl p-4 md:p-5 w-[85%]"
+                        id="hero-practice-card"
+                      >
+                        <div
+                          class="text-[10px] text-[#B8B5AC] uppercase tracking-wider mb-2"
+                        >
+                          Practice Prompt
+                        </div>
+                        <div
+                          class="text-[#FAF8F2] text-sm md:text-base font-medium leading-snug mb-3"
+                        >
+                          "Tell me about a project you are proud of."
+                        </div>
+                        <div class="flex gap-2">
+                          <div
+                            class="h-6 px-3 bg-[#F4F1E9]/10 rounded flex items-center text-[10px] text-[#FAF8F2]"
+                          >
+                            Structure
+                          </div>
+                          <div
+                            class="h-6 px-3 bg-[#F4F1E9]/10 rounded flex items-center text-[10px] text-[#FAF8F2]"
+                          >
+                            Keywords
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div style="position: absolute; text-align: center; padding: 2rem;">
-                        <h3 style="font-size: 2rem;">Ready to level up?</h3>
-                        <p>Join 10,000+ professionals already using .Connect</p>
-                        <a href="/signup.html" class="btn btn-primary" style="margin-top: 1rem;">Join the Tribe</a>
+                  </div>
+                  <!-- Resume Paper Layer (Overlapping) -->
+                  <div
+                    class="absolute -right-2 md:right-4 top-4 md:top-8 w-[240px] md:w-[280px] bg-[#FFFEFA] border border-[#D8D5CC] rounded-lg shadow-xl p-4 md:p-6 rotate-2 origin-bottom-right z-20"
+                    id="hero-resume-paper"
+                  >
+                    <div class="border-b border-[#D8D5CC] pb-3 mb-3">
+                      <div class="text-lg font-bold text-[#11110F] mb-1">
+                        Alex Morgan
+                      </div>
+                      <div class="text-xs text-[#64635D]">
+                        Design Student • Portfolio
+                      </div>
                     </div>
+                    <div class="mb-3">
+                      <div
+                        class="text-[10px] font-bold text-[#11110F] uppercase tracking-wider mb-1.5"
+                      >
+                        Education
+                      </div>
+                      <div class="text-xs font-medium text-[#11110F]">
+                        B.S. Interaction Design
+                      </div>
+                      <div class="text-[10px] text-[#64635D]">
+                        Expected 2027
+                      </div>
+                    </div>
+                    <div class="mb-4">
+                      <div
+                        class="text-[10px] font-bold text-[#11110F] uppercase tracking-wider mb-1.5"
+                      >
+                        Projects
+                      </div>
+                      <div class="text-xs font-medium text-[#11110F]">
+                        Campus library portal
+                      </div>
+                      <div class="text-[11px] leading-relaxed text-[#64635D]">
+                        Designed an accessible search flow.
+                      </div>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                      <span
+                        class="px-2 py-1 bg-[#F4F1E9] text-[#11110F] text-[9px] rounded-md font-medium"
+                        >Figma</span
+                      >
+                      <span
+                        class="px-2 py-1 bg-[#F4F1E9] text-[#11110F] text-[9px] rounded-md font-medium"
+                        >Research</span
+                      >
+                      <span
+                        class="px-2 py-1 bg-[#F59E0B]/20 text-[#D97706] border border-[#F59E0B]/30 text-[9px] rounded-md font-medium"
+                        >+ CSS</span
+                      >
+                    </div>
+                    <!-- Score Tag -->
+                    <div
+                      class="absolute -bottom-3 -left-4 md:-left-6 bg-[#FFFEFA] border border-[#D8D5CC] rounded-full px-3 py-1.5 shadow-md flex items-center gap-2"
+                    >
+                      <div class="w-2 h-2 rounded-full bg-[#2D6A4F]"></div>
+                      <span class="text-[10px] font-bold text-[#11110F]"
+                        >Example score: 82</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="absolute -bottom-4 right-0 text-[11px] text-[#64635D] font-medium"
+                    id="hero-preview-caption"
+                  >
+                    Illustrative preview · example structure score
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </section>
-
-        <!-- CTA Section -->
-        <section class="container" style="text-align: center; padding: 10rem 1.5rem;">
-            <div class="glass-card"
-                style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(12, 10, 9, 0.8) 100%); padding: 5rem 2rem;">
-                <h2 style="font-size: 3.5rem; margin-bottom: 1rem;">Don't just apply. <br><span
-                        style="color: var(--accent);">Stand out.</span></h2>
-                <p style="margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto;">Upload your
-                    resume today and see where you rank in the global professional leaderboard.</p>
-                <a href="/signup.html" class="btn btn-primary" style="font-size: 1.2rem; padding: 1.2rem 3rem;">Create
-                    Your Pro Account</a>
-            </div>
-        </section>
-    </main>
-
-    <footer style="border-top: 1px solid var(--glass-border); padding: 5rem 0; background: var(--nav-bg);">
-        <div class="container" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;">
-            <div>
-                <a href="/" class="logo">.<span>Connect</span>.</a>
-                <p style="margin-top: 1.5rem; font-size: 0.9rem;">The high-performance platform for career growth,
-                    networking, and technical excellence.</p>
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i
-                            class="fab fa-twitter"></i></a>
-                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i
-                            class="fab fa-linkedin"></i></a>
-                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i
-                            class="fab fa-github"></i></a>
+        <!-- Divider -->
+        <div class="container-custom">
+          <hr class="border-rule" />
+        </div>
+        <!-- Showcases Section -->
+        <section class="container-custom py-16 md:py-24" id="features">
+          <h2 class="sr-only">Tools for your next chapter</h2>
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <!-- Resume Showcase (Wide) -->
+            <div
+              class="surface-card p-6 md:p-8 md:col-span-7 flex flex-col md:flex-row gap-8 items-center"
+            >
+              <div class="flex-1 order-2 md:order-1">
+                <div
+                  class="w-10 h-10 rounded-full bg-[#F4F1E9] flex items-center justify-center mb-5 text-[#11110F]"
+                >
+                  <iconify-icon
+                    class="text-lg"
+                    icon="lucide:file-search"
+                  ></iconify-icon>
                 </div>
+                <h3 class="text-xl font-bold mb-3">Resume analysis</h3>
+                <p class="text-[#64635D] text-sm leading-relaxed mb-4">
+                  Upload your document to check for missing structural elements
+                  and common terminology. Get a clear view of how your
+                  formatting holds up.
+                </p>
+              </div>
+              <div
+                class="w-full md:w-48 h-40 bg-[#F4F1E9] rounded-lg border border-rule relative overflow-hidden order-1 md:order-2 shrink-0 p-4"
+              >
+                <div class="h-2 w-1/3 bg-[#D8D5CC] rounded mb-3"></div>
+                <div class="space-y-2 mb-4">
+                  <div
+                    class="h-1.5 w-full bg-[#D8D5CC] rounded opacity-60"
+                  ></div>
+                  <div
+                    class="h-1.5 w-4/5 bg-[#D8D5CC] rounded opacity-60"
+                  ></div>
+                </div>
+                <div
+                  class="p-2 bg-[#FFFEFA] border border-[#F59E0B]/30 rounded text-[9px] text-[#D97706] font-medium inline-block"
+                >
+                  Recommendation: Add metrics
+                </div>
+              </div>
             </div>
-            <div>
-                <h4>Platform</h4>
-                <a href="/jobs.html"
-                    style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Job
-                    Board</a>
-                <a href="/interview.html"
-                    style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Interview
-                    Prep</a>
-                <a href="/leaderboard.html"
-                    style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Leaderboard</a>
+            <!-- Practice Showcase (Compact Dark) -->
+            <div
+              class="bg-[#1C1C18] border border-[#3A3935] rounded-[20px] p-6 md:p-8 md:col-span-5 flex flex-col text-[#FAF8F2]"
+            >
+              <div
+                class="w-10 h-10 rounded-full bg-[#3A3935] flex items-center justify-center mb-5 text-[#F59E0B]"
+              >
+                <iconify-icon
+                  class="text-lg"
+                  icon="lucide:message-square"
+                ></iconify-icon>
+              </div>
+              <h3 class="text-xl font-bold mb-3 text-[#FFFEFA]">
+                Written practice
+              </h3>
+              <p class="text-[#B8B5AC] text-sm leading-relaxed mb-6 flex-grow">
+                Respond to real-world written prompts. Get immediate feedback on
+                the keywords you used and the structure of your answer.
+              </p>
+              <div class="bg-[#11110F] border border-[#3A3935] rounded-lg p-3">
+                <div class="text-[10px] text-[#64635D] mb-1">
+                  Your response snippet
+                </div>
+                <div class="text-xs text-[#B8B5AC] leading-relaxed">
+                  "...led the
+                  <span
+                    class="text-[#F59E0B] border-b border-[#F59E0B] border-dashed"
+                    >migration project</span
+                  >
+                  which resulted in a 20% decrease in load times..."
+                </div>
+              </div>
             </div>
-            <div>
-                <h4>Resources</h4>
-                <a href="#"
-                    style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Resume
-                    Tips</a>
-                <a href="#"
-                    style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">AI
-                    Interview Guide</a>
-                <a href="#"
-                    style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Sitemap</a>
+            <!-- Peers Showcase (Open Horizontal) -->
+            <div
+              class="md:col-span-12 border-t border-rule mt-4 pt-10 flex flex-col md:flex-row gap-8 items-center"
+            >
+              <div class="flex-1">
+                <h3 class="text-xl font-bold mb-3">Peer connections</h3>
+                <p class="text-[#64635D] text-sm leading-relaxed max-w-lg">
+                  Find people navigating similar career transitions. Exchange
+                  feedback, share progress, and build a network grounded in
+                  actual interaction.
+                </p>
+              </div>
+              <div class="flex gap-4">
+                <div
+                  class="w-12 h-12 rounded-full bg-[#D8D5CC] border-2 border-[#FFFEFA] shadow-sm flex items-center justify-center text-[#64635D]"
+                >
+                  <iconify-icon icon="lucide:user"></iconify-icon>
+                </div>
+                <div
+                  class="w-12 h-12 rounded-full bg-[#11110F] border-2 border-[#FFFEFA] shadow-sm flex items-center justify-center text-[#FAF8F2] -ml-6"
+                >
+                  <iconify-icon icon="lucide:user"></iconify-icon>
+                </div>
+                <div
+                  class="w-12 h-12 rounded-full bg-[#F59E0B] border-2 border-[#FFFEFA] shadow-sm flex items-center justify-center text-[#11110F] -ml-6 text-xs font-bold"
+                >
+                  +4
+                </div>
+              </div>
             </div>
-            <div>
-                <h4>Company</h4>
-                <a href="#"
-                    style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">About
-                    Us</a>
-                <a href="#"
-                    style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Privacy
-                    Policy</a>
-                <a href="#"
-                    style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Contact</a>
+          </div>
+        </section>
+        <!-- Journey Section -->
+        <section
+          class="bg-[#1C1C18] text-[#FAF8F2] py-20 md:py-24"
+          id="journey"
+        >
+          <div class="container-custom">
+            <div class="max-w-3xl mb-12 md:mb-16">
+              <h2 class="font-georgia section-heading mb-4">
+                A little direction. A real next step.
+              </h2>
+              <p class="text-[#B8B5AC] text-lg">
+                Focus on the work, not on navigating a complex tool.
+              </p>
             </div>
+            <div
+              class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 border-t border-[#3A3935] pt-12"
+            >
+              <div>
+                <div class="text-[#F59E0B] font-georgia text-4xl mb-4">01</div>
+                <h3 class="text-xl font-bold mb-2">Create your profile</h3>
+                <p class="text-[#B8B5AC] text-sm">
+                  Define your baseline and target roles in a few clicks.
+                </p>
+              </div>
+              <div>
+                <div class="text-[#F59E0B] font-georgia text-4xl mb-4">02</div>
+                <h3 class="text-xl font-bold mb-2">Verify your resume</h3>
+                <p class="text-[#B8B5AC] text-sm">
+                  Upload your resume for content checks, then review its
+                  structure.
+                </p>
+              </div>
+              <div>
+                <div class="text-[#F59E0B] font-georgia text-4xl mb-4">03</div>
+                <h3 class="text-xl font-bold mb-2">Choose your next move</h3>
+                <p class="text-[#B8B5AC] text-sm">
+                  Start interview practice or connect with relevant peers.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- FAQ Section -->
+        <section class="container-custom py-20 md:py-24" id="faq">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+            <div class="lg:col-span-4">
+              <h2 class="font-georgia section-heading mb-4">
+                A few things to know.
+              </h2>
+              <p class="text-[#64635D]">Facts about how the studio operates.</p>
+            </div>
+            <div class="lg:col-span-8 flex flex-col gap-6">
+              <div class="border-b border-rule pb-6">
+                <h3 class="font-bold text-lg mb-2">
+                  What resume formats are supported?
+                </h3>
+                <p class="text-[#64635D] text-sm leading-relaxed">
+                  We accept PDF, DOCX, and TXT files up to 5 MB in size.
+                </p>
+              </div>
+              <div class="border-b border-rule pb-6">
+                <h3 class="font-bold text-lg mb-2">
+                  How do the resume checks work?
+                </h3>
+                <p class="text-[#64635D] text-sm leading-relaxed">
+                  Google Gemini checks whether your file is a personal resume or
+                  CV. Experiment reports and assignments are rejected. A
+                  separate structure check suggests improvements.
+                </p>
+              </div>
+              <div class="border-b border-rule pb-6">
+                <h3 class="font-bold text-lg mb-2">
+                  Is the analysis score an ATS guarantee?
+                </h3>
+                <p class="text-[#64635D] text-sm leading-relaxed">
+                  No. The score checks common resume sections and keywords; it
+                  does not predict hiring decisions. Gemini checks document
+                  type, not whether the claims in a resume are true.
+                </p>
+              </div>
+              <div class="pb-6">
+                <h3 class="font-bold text-lg mb-2">Can beginners use this?</h3>
+                <p class="text-[#64635D] text-sm leading-relaxed">
+                  Yes. The platform is designed for anyone looking to organize
+                  their professional presentation, regardless of current
+                  experience level.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Final CTA -->
+        <section
+          class="bg-[#F4F1E9] border-t border-rule py-24 md:py-32 text-center px-4"
+        >
+          <div class="container-custom max-w-2xl">
+            <h2 class="font-georgia section-heading mb-6">
+              Make your next move.
+            </h2>
+            <p class="text-[#64635D] text-lg mb-10">
+              Start with your profile. Take the next step from there.
+            </p>
+            <a
+              class="btn-primary px-8 py-4 text-lg"
+              href="/signup.html"
+              id="final-cta-btn"
+              >Create your profile</a
+            >
+          </div>
+        </section>
+      </main>
+      <!-- Compact Footer -->
+      <footer class="border-t border-rule py-10 md:py-12 bg-[#FFFEFA]">
+        <div
+          class="container-custom flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-8"
+        >
+          <div>
+            <a
+              class="text-xl font-extrabold tracking-tight text-[#11110F] text-decoration-none"
+              href="/"
+              id="footer-logo"
+            >
+              .<span class="text-[#F59E0B]">Connect</span>.
+            </a>
+            <p class="text-sm text-[#64635D] mt-2">Career growth, connected.</p>
+          </div>
+          <div class="flex flex-wrap gap-6 text-sm font-medium">
+            <a
+              class="text-[#64635D] hover:text-[#11110F] transition-colors"
+              href="/login.html"
+              id="footer-login"
+              >Sign In</a
+            >
+            <a
+              class="text-[#64635D] hover:text-[#11110F] transition-colors"
+              href="/signup.html"
+              id="footer-signup"
+              >Register</a
+            >
+            <a
+              class="text-[#64635D] hover:text-[#11110F] transition-colors"
+              href="#faq"
+              id="footer-faq"
+              >Questions</a
+            >
+          </div>
         </div>
-        <div class="container"
-            style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; padding-top: 2rem;">
-            <p style="font-size: 0.8rem; color: var(--text-secondary); opacity: 0.5;">&copy; 2026 .Connect Platform. All
-                rights reserved.</p>
-        </div>
-    </footer>
-</body>
-
+      </footer>
+    </div>
+  </body>
 </html>

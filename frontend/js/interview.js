@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `${currentCompany}_Interview_PYQs.pdf`;
+                a.download = `${currentCompany}_Practice_Questions.pdf`;
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentQuestionIndex >= questions.length) {
             // Calculate average score and save
             const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-            addBotMessage(`Interview complete. Generating your Career Readiness Report...`);
+            addBotMessage(`Interview complete. Preparing your practice summary…`);
             answerInput.disabled = true;
             submitBtn.disabled = true;
             
@@ -94,16 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     const insightsEl = document.getElementById('report-insights');
                     
                     if (avgScore >= 80) {
-                        statusEl.innerText = "Elite Candidate";
-                        statusEl.style.color = "#10b981";
-                        insightsEl.innerText = "Your technical accuracy and communication are top-tier. You are ready for high-stakes interviews at major tech firms.";
+                        statusEl.innerText = "Strong practice";
+                        statusEl.style.color = "#2d6a4f";
+                        insightsEl.innerText = "Your answers matched many of the heuristic's length and keyword checks. Review the reference answers for technical accuracy.";
                     } else if (avgScore >= 60) {
-                        statusEl.innerText = "Industry Ready";
+                        statusEl.innerText = "Building confidence";
                         statusEl.style.color = "var(--accent)";
                         insightsEl.innerText = "Strong performance. Focus on refining your system design explanations and edge-case handling for a perfect score.";
                     } else {
                         statusEl.innerText = "Growth Required";
-                        statusEl.style.color = "#ef4444";
+                        statusEl.style.color = "#b53535";
                         insightsEl.innerText = "You have the foundation, but need more practice with technical clarity. Review the model answers carefully and retry.";
                     }
                 }
@@ -124,7 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
         addBotMessage(`Here is your question: **${q}**`);
         
         // Add a "Show Answer" hint (Better scoping to avoid connection errors)
-        const hintDiv = document.createElement('div');
+        const hintDiv = document.createElement('button');
+        hintDiv.type = 'button';
         hintDiv.className = 'hint-link';
         hintDiv.style.cssText = 'font-size: 0.8rem; color: var(--accent); cursor: pointer; margin-top: -1rem; margin-left: 2rem; margin-bottom: 1rem; transition: opacity 0.3s;';
         hintDiv.innerHTML = '<i class="fas fa-lightbulb"></i> Stuck? Click to see the answer';
@@ -139,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             element.classList.add('loading');
             const originalHTML = element.innerHTML;
-            element.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ConnectAI is thinking...';
+            element.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading reference answer…';
             
             const res = await fetch('/api/interview/answer', {
                 method: 'POST',

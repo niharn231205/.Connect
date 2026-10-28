@@ -30,3 +30,6 @@ __pycache__/
 
 # Project-local Python runtime
 backend/.venv/
+
+# Superdesign temporary preview files
+.superdesign/tmp/

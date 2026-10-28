@@ -1,123 +1,199 @@
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Questionnaire - .Connect</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-    <nav>
-        <a href="/dashboard.html" class="logo">.<span>Connect</span>.</a>
-        <div class="nav-links">
-            <a href="/dashboard.html">Dashboard</a>
-            <a href="/leaderboard.html">Leaderboard</a>
-            <a href="/profile.html">Profile</a>
-            <a href="#" onclick="logout()" class="btn btn-secondary" style="padding: 0.4rem 1rem; margin-left: 1rem; font-size: 0.85rem;">Logout</a>
-        </div>
-    </nav>
-    <div class="container animate-fade">
+    <link href="/css/style.css" rel="stylesheet" />
+    <link href="/css/studio.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="app-page page-questions">
+    <a class="skip-link" href="#app-main">Skip to content</a>
+    <header class="mobile-header">
+      <a class="logo" href="/dashboard.html">.<span>Connect</span>.</a
+      ><button
+        aria-controls="studio-sidebar"
+        aria-expanded="false"
+        aria-label="Open navigation"
+        class="menu-toggle"
+      >
+        <i aria-hidden="true" class="fas fa-bars"></i>
+      </button>
+    </header>
+    <div class="nav-backdrop" hidden=""></div>
+    <aside class="studio-sidebar" id="studio-sidebar">
+      <a aria-label=".Connect home" class="logo" href="/"
+        >.<span>Connect</span>.</a
+      >
+      <div class="studio-label">YOUR CAREER STUDIO</div>
+      <nav aria-label="Workspace">
+        <a href="/dashboard.html"
+          ><i aria-hidden="true" class="fas fa-house"></i
+          ><span>Overview</span></a
+        ><a href="/resume.html"
+          ><i aria-hidden="true" class="fas fa-file-lines"></i
+          ><span>Your resume</span></a
+        ><a href="/jobs.html"
+          ><i aria-hidden="true" class="fas fa-briefcase"></i
+          ><span>Explore roles</span></a
+        ><a href="/matcher.html"
+          ><i aria-hidden="true" class="fas fa-arrows-left-right"></i
+          ><span>Resume matcher</span></a
+        ><a href="/interview.html"
+          ><i aria-hidden="true" class="fas fa-comment-dots"></i
+          ><span>Interview practice</span></a
+        ><a href="/connect.html"
+          ><i aria-hidden="true" class="fas fa-user-group"></i
+          ><span>Connections</span></a
+        ><a href="/chat.html"
+          ><i aria-hidden="true" class="fas fa-envelope"></i
+          ><span>Messages</span></a
+        ><a href="/leaderboard.html"
+          ><i aria-hidden="true" class="fas fa-ranking-star"></i
+          ><span>Leaderboard</span></a
+        ><a href="/profile.html"
+          ><i aria-hidden="true" class="fas fa-user"></i
+          ><span>Your profile</span></a
+        >
+      </nav>
+      <div class="sidebar-note">
+        <span class="tiny-dot"></span> A little progress, every day.
+      </div>
+      <button class="logout-button" onclick="logout()" type="button">
+        <i aria-hidden="true" class="fas fa-arrow-right-from-bracket"></i> Sign
+        out
+      </button>
+    </aside>
+    <main class="workspace" id="app-main" tabindex="-1">
+      <div class="container animate-fade">
         <div class="center-content">
-            <div class="glass-card" style="max-width: 600px; width: 100%;">
-                <header style="margin-bottom: 2rem;">
-                    <h2 style="margin-bottom: 0.5rem; color: var(--accent);">Personalize Your Path</h2>
-                    <p>Help us tailor your experience by answering a few quick questions.</p>
-                </header>
-                
-                <div id="error-msg" class="error" style="margin-bottom: 1.5rem;"></div>
-
-                <form id="questions-form">
-                    <div class="form-group">
-                        <label>Professional Field</label>
-                        <select id="field" class="form-control" required style="appearance: none; background: rgba(255,255,255,0.03);">
-                            <option value="" disabled selected>Select your specialization</option>
-                            <option value="AIML">AI / Machine Learning</option>
-                            <option value="Web Development">Web Development</option>
-                            <option value="Data Science">Data Science</option>
-                            <option value="Cybersecurity">Cybersecurity</option>
-                            <option value="UI/UX Design">UI/UX Design</option>
-                            <option value="Cloud Computing">Cloud Computing</option>
-                            <option value="Product Management">Product Management</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Interests & Skills</label>
-                        <input type="text" id="interests" class="form-control" placeholder="e.g., AI, React, Product Strategy" required>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="form-group">
-                            <label>Experience Level</label>
-                            <select id="experience" class="form-control" required style="appearance: none; background: rgba(255,255,255,0.03);">
-                                <option value="Beginner">Beginner</option>
-                                <option value="Intermediate" selected>Intermediate</option>
-                                <option value="Expert">Expert</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Work Preference</label>
-                            <select id="workType" class="form-control" required style="appearance: none; background: rgba(255,255,255,0.03);">
-                                <option value="Remote">Remote</option>
-                                <option value="On-site">On-site</option>
-                                <option value="Hybrid" selected>Hybrid</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Career Goals</label>
-                        <input type="text" id="careerGoals" class="form-control" required placeholder="What are you working towards?">
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">Finish Setup &rightarrow;</button>
-                </form>
-            </div>
-        </div>
-    </div>
-    <footer style="border-top: 1px solid var(--glass-border); padding: 5rem 0; background: var(--nav-bg); margin-top: 4rem;">
-        <div class="container" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;">
-            <div>
-                <a href="/" class="logo">.<span>Connect</span>.</a>
-                <p style="margin-top: 1.5rem; font-size: 0.9rem;">The high-performance platform for career growth, networking, and technical excellence.</p>
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
-                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fab fa-github"></i></a>
+          <div class="glass-card" style="max-width: 600px; width: 100%">
+            <header style="margin-bottom: 2rem">
+              <h1 style="margin-bottom: 0.5rem; color: var(--accent)">
+                Personalize Your Path
+              </h1>
+              <p>
+                Help us tailor your experience by answering a few quick
+                questions.
+              </p>
+            </header>
+            <div
+              class="error"
+              id="error-msg"
+              role="alert"
+              style="margin-bottom: 1.5rem"
+            ></div>
+            <form id="questions-form">
+              <div class="form-group">
+                <label for="field">Professional Field</label>
+                <select
+                  class="form-control"
+                  id="field"
+                  required=""
+                  style="
+                    appearance: none;
+                    background: rgba(255, 255, 255, 0.03);
+                  "
+                >
+                  <option disabled="" selected="" value="">
+                    Select your specialization
+                  </option>
+                  <option value="AIML">AI / Machine Learning</option>
+                  <option value="Web Development">Web Development</option>
+                  <option value="Data Science">Data Science</option>
+                  <option value="Cybersecurity">Cybersecurity</option>
+                  <option value="UI/UX Design">UI/UX Design</option>
+                  <option value="Cloud Computing">Cloud Computing</option>
+                  <option value="Product Management">Product Management</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="interests">Interests &amp; Skills</label>
+                <input
+                  class="form-control"
+                  id="interests"
+                  placeholder="e.g., AI, React, Product Strategy"
+                  required=""
+                  type="text"
+                />
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 1.5rem;
+                "
+              >
+                <div class="form-group">
+                  <label for="experience">Experience Level</label>
+                  <select
+                    class="form-control"
+                    id="experience"
+                    required=""
+                    style="
+                      appearance: none;
+                      background: rgba(255, 255, 255, 0.03);
+                    "
+                  >
+                    <option value="Beginner">Beginner</option>
+                    <option selected="" value="Intermediate">
+                      Intermediate
+                    </option>
+                    <option value="Expert">Expert</option>
+                  </select>
                 </div>
-            </div>
-            <div>
-                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Platform</h4>
-                <a href="/jobs.html" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Job Board</a>
-                <a href="/interview.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Interview Prep</a>
-                <a href="/leaderboard.html" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Leaderboard</a>
-            </div>
-            <div>
-                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Resources</h4>
-                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Resume Tips</a>
-                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">AI Interview Guide</a>
-                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Success Stories</a>
-            </div>
-            <div>
-                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Company</h4>
-                <a href="#" style="display: block; margin-top: 1rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">About Us</a>
-                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Privacy Policy</a>
-                <a href="#" style="display: block; margin-top: 0.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Contact Support</a>
-            </div>
+                <div class="form-group">
+                  <label for="workType">Work Preference</label>
+                  <select
+                    class="form-control"
+                    id="workType"
+                    required=""
+                    style="
+                      appearance: none;
+                      background: rgba(255, 255, 255, 0.03);
+                    "
+                  >
+                    <option value="Remote">Remote</option>
+                    <option value="On-site">On-site</option>
+                    <option selected="" value="Hybrid">Hybrid</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="careerGoals">Career Goals</label>
+                <input
+                  class="form-control"
+                  id="careerGoals"
+                  placeholder="What are you working towards?"
+                  required=""
+                  type="text"
+                />
+              </div>
+              <button
+                class="btn btn-primary btn-block"
+                style="margin-top: 1rem"
+                type="submit"
+              >
+                Finish Setup →
+              </button>
+            </form>
+          </div>
         </div>
-        <div class="container" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; padding-top: 2rem;">
-            <p style="font-size: 0.8rem; color: var(--text-secondary); opacity: 0.5;">&copy; 2026 .Connect Platform Pro. All rights reserved.</p>
-        </div>
-    </footer>
-
+      </div>
+    </main>
     <script src="/js/api.js"></script>
     <script src="/js/ui.js"></script>
     <script src="/js/questions.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.initCustomSelects) initCustomSelects();
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+        if (window.initCustomSelects) initCustomSelects();
+      });
     </script>
-</body>
+  </body>
 </html>
