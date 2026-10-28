@@ -339,15 +339,21 @@ const endorseSkill = (req, res) => {
 const saveInterviewScore = (req, res) => {
     try {
         const userId = req.user.id;
-        const { company, score } = req.body;
+        const { company, score, sessionId } = req.body;
+        if (typeof company !== 'string' || !company.trim() || company.length > 120 || !Number.isFinite(score) || score < 0 || score > 100 ||
+            (sessionId !== undefined && (typeof sessionId !== 'string' || sessionId.length > 100))) {
+            return res.status(400).json({ message: 'A valid practice role and score are required.' });
+        }
         const user = db.findUserById(userId);
 
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         const history = user.interviewHistory || [];
+        if (sessionId && history.some(entry => entry.sessionId === sessionId)) return res.json({ message: 'Interview already recorded', history });
         history.push({
             company,
             score,
+            ...(sessionId ? { sessionId } : {}),
             date: new Date().toISOString()
         });
 

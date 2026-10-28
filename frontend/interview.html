@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>.Connect - Mock Interview</title>
+    <title>AI interview practice &amp; history — .Connect</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
       rel="stylesheet"
@@ -14,151 +14,9 @@
       rel="stylesheet"
     />
     <link href="css/style.css" rel="stylesheet" />
-    <style>
-      .prep-container {
-        max-width: 900px;
-        margin: 2rem auto;
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        min-height: calc(100vh - 120px);
-      }
 
-      .company-selector {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 1rem;
-        padding: 2rem;
-        text-align: center;
-      }
-
-      .company-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 1rem;
-        margin-top: 1.5rem;
-      }
-
-      .company-btn {
-        background: var(--bg-dark);
-        border: 1px solid var(--border-color);
-        padding: 1rem;
-        border-radius: 0.5rem;
-        color: var(--text-main);
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .company-btn:hover {
-        border-color: var(--primary-color);
-        background: rgba(99, 102, 241, 0.1);
-      }
-
-      .chat-bot-area {
-        display: none;
-        flex: 1;
-        background: var(--bg-card);
-        border-radius: 1rem;
-        border: 1px solid var(--border-color);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .bot-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-        background: rgba(255, 255, 255, 0.02);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .chat-history {
-        flex: 1;
-        padding: 1.5rem;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-
-      .msg-bubble {
-        max-width: 80%;
-        padding: 1rem 1.5rem;
-        border-radius: 1rem;
-        line-height: 1.5;
-      }
-
-      .msg-bot {
-        background: rgba(99, 102, 241, 0.1);
-        border: 1px solid rgba(99, 102, 241, 0.3);
-        border-bottom-left-radius: 0.2rem;
-        align-self: flex-start;
-      }
-
-      .msg-user {
-        background: var(--bg-dark);
-        border: 1px solid var(--border-color);
-        border-bottom-right-radius: 0.2rem;
-        align-self: flex-end;
-        color: var(--text-muted);
-      }
-
-      .feedback-bubble {
-        background: rgba(16, 185, 129, 0.1);
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        color: #10b981;
-        font-size: 0.9rem;
-        border-radius: 1rem;
-        padding: 1rem;
-        margin-top: -1rem;
-        align-self: flex-start;
-        max-width: 70%;
-      }
-
-      .input-area {
-        padding: 1.5rem;
-        border-top: 1px solid var(--border-color);
-        display: flex;
-        gap: 1rem;
-      }
-
-      .input-area textarea {
-        flex: 1;
-        background: var(--bg-dark);
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        color: var(--text-main);
-        font-family: inherit;
-        resize: vertical;
-        min-height: 50px;
-        max-height: 200px;
-      }
-
-      .input-area textarea:focus {
-        outline: none;
-        border-color: var(--primary-color);
-      }
-
-      .submit-btn {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 0 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .submit-btn:hover {
-        opacity: 0.9;
-      }
-    </style>
     <link href="/css/studio.css" rel="stylesheet" />
+    <link href="/css/interview.css" rel="stylesheet" />
   </head>
   <body class="app-page page-interview">
     <a class="skip-link" href="#app-main">Skip to content</a>
@@ -218,237 +76,213 @@
       </button>
     </aside>
     <main class="workspace" id="app-main" tabindex="-1">
-      <!-- Navbar details -->
-      <div class="prep-container">
-        <div class="company-selector" id="setupArea">
-          <h1>A space to practice.</h1>
-          <p style="color: var(--text-muted); margin-bottom: 2rem">
-            Choose a practice context for five written questions. All contexts
-            use the same general question pool; these are not employer-supplied
-            questions.
-          </p>
-          <div class="company-grid">
-            <button class="company-btn" data-company="Google">Google</button>
-            <button class="company-btn" data-company="Amazon">Amazon</button>
-            <button class="company-btn" data-company="Microsoft">
-              Microsoft
-            </button>
-            <button class="company-btn" data-company="Meta">Meta</button>
-            <button class="company-btn" data-company="Apple">Apple</button>
-            <button class="company-btn" data-company="Netflix">Netflix</button>
-          </div>
-          <div
-            style="
-              margin-top: 2rem;
-              border-top: 1px solid var(--border-color);
-              padding-top: 2rem;
-            "
-          >
-            <p
-              style="
-                font-size: 0.9rem;
-                color: var(--text-muted);
-                margin-bottom: 1rem;
-              "
-            >
-              Want to study all 50 questions offline?
-            </p>
-            <button
-              id="downloadPdfBtn"
-              style="
-                background: var(--bg-card);
-                border: 1px solid var(--primary-color);
-                color: var(--primary-color);
-                padding: 0.8rem 1.5rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                font-weight: 600;
-              "
-            >
-              <i class="fas fa-file-pdf"></i> Download practice questions
-            </button>
-          </div>
-        </div>
-        <div class="chat-bot-area" id="chatArea" style="display: none">
-          <div class="bot-header">
-            <h3 style="margin: 0">
-              <i class="fas fa-robot"></i> Interviewer (<span
-                id="companyLabel"
-              ></span
-              >)
-            </h3>
-            <span
-              id="progressLabel"
-              style="font-size: 0.9rem; color: var(--text-muted)"
-              >Q 1 of 5</span
-            >
-          </div>
-          <div class="chat-history" id="chatHistory">
-            <!-- Chat bubbles go here -->
-          </div>
-          <div class="input-area">
-            <textarea
-              aria-label="Type your answer here... Explain your logic and write pseudo-code if needed."
-              id="answerInput"
-              placeholder="Type your answer here... Explain your logic and write pseudo-code if needed."
-            ></textarea>
-            <button
-              aria-label="Submit answer"
-              class="submit-btn"
-              id="submitAnswerBtn"
-            >
-              <i class="fas fa-paper-plane"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <!-- Career Readiness Report Modal -->
-      <div
-        id="reportModal"
-        style="
-          display: none;
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.8);
-          z-index: 2000;
-          align-items: center;
-          justify-content: center;
-          backdrop-filter: blur(8px);
-        "
-      >
-        <div
-          class="glass-card"
-          style="
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
-            border-color: var(--accent);
-            padding: 3rem;
-          "
-        >
-          <div style="margin-bottom: 2rem">
-            <i
-              class="fas fa-award"
-              style="font-size: 4rem; color: var(--accent); margin-bottom: 1rem"
-            ></i>
-            <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem">
-              Interview Complete!
-            </h2>
+      <div class="prep-container interview-studio">
+        <header class="interview-intro">
+          <div>
+            <span class="eyebrow">PRACTICE. REFLECT. TRY AGAIN.</span>
+            <h1>Your next answer starts here.</h1>
             <p>
-              A summary of your written practice. Scores use answer length and
-              keyword heuristics.
+              Fresh questions. Thoughtful AI feedback. A practice journal you
+              can return to.
             </p>
           </div>
-          <div
-            style="
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 1.5rem;
-              margin-bottom: 2.5rem;
-              text-align: left;
-            "
+          <a class="btn btn-secondary" href="#interview-history"
+            >View history ↓</a
           >
-            <div
-              style="
-                background: rgba(255, 255, 255, 0.03);
-                padding: 1.5rem;
-                border-radius: 12px;
-                border: 1px solid var(--glass-border);
-              "
-            >
-              <p
-                style="
-                  font-size: 0.8rem;
-                  margin-bottom: 0.5rem;
-                  text-transform: uppercase;
-                  letter-spacing: 0.1em;
-                "
-              >
-                Overall Score
-              </p>
-              <div
-                id="report-score"
-                style="
-                  font-size: 2.5rem;
-                  font-weight: 800;
-                  color: var(--accent);
-                "
-              >
-                0%
+        </header>
+        <div
+          class="error interview-notice"
+          hidden=""
+          id="interview-error"
+          role="alert"
+        ></div>
+        <p
+          aria-live="polite"
+          class="interview-notice"
+          id="interview-status"
+          role="status"
+        ></p>
+        <section class="glass-card" id="interview-setup">
+          <div class="setup-heading">
+            <span class="tag">POWERED BY GEMINI</span>
+            <h2>Make it relevant to you.</h2>
+            <p>
+              Choose your role and focus. Gemini generates original questions
+              and reference answers, then reviews your written responses.
+            </p>
+          </div>
+          <form id="ai-interview-form">
+            <div class="interview-form-grid">
+              <div class="form-group">
+                <label for="interview-role">Target role</label
+                ><input
+                  class="form-control"
+                  id="interview-role"
+                  maxlength="120"
+                  placeholder="e.g. Frontend developer"
+                  required=""
+                  value="Software developer"
+                />
+              </div>
+              <div class="form-group">
+                <label for="interview-level">Experience level</label
+                ><select class="form-control" id="interview-level">
+                  <option>Beginner</option>
+                  <option>Intermediate</option>
+                  <option>Advanced</option>
+                </select>
               </div>
             </div>
-            <div
-              style="
-                background: rgba(255, 255, 255, 0.03);
-                padding: 1.5rem;
-                border-radius: 12px;
-                border: 1px solid var(--glass-border);
-              "
-            >
-              <p
-                style="
-                  font-size: 0.8rem;
-                  margin-bottom: 0.5rem;
-                  text-transform: uppercase;
-                  letter-spacing: 0.1em;
-                "
-              >
-                Practice level
-              </p>
-              <div
-                id="report-status"
-                style="
-                  font-size: 1.1rem;
-                  font-weight: 700;
-                  color: var(--success);
-                  margin-top: 0.5rem;
-                "
-              >
-                Match-Ready
+            <div class="form-group">
+              <label for="interview-focus"
+                >Topics to focus on <span>(optional)</span></label
+              ><input
+                class="form-control"
+                id="interview-focus"
+                maxlength="500"
+                placeholder="e.g. React, accessibility, project discussions"
+              />
+            </div>
+            <div class="setup-actions">
+              <div class="form-group">
+                <label for="interview-count">Session length</label
+                ><select class="form-control" id="interview-count">
+                  <option value="3">3 questions · a quick practice</option>
+                  <option value="5">5 questions · a deeper session</option>
+                </select>
               </div>
+              <button
+                class="btn btn-primary"
+                id="generate-interview"
+                type="submit"
+              >
+                Generate my interview
+                <i aria-hidden="true" class="fas fa-arrow-right"></i>
+              </button>
             </div>
+          </form>
+          <p class="interview-disclosure">
+            Your role, focus and submitted answers are sent to Google Gemini.
+            Feedback is AI-generated study guidance, not a hiring assessment.
+            Questions are not certified by any employer.
+          </p>
+        </section>
+        <section
+          aria-label="Current interview"
+          class="glass-card"
+          hidden=""
+          id="interview-session"
+        >
+          <div class="session-top">
+            <span class="eyebrow" id="session-role"></span
+            ><span class="tag" id="question-progress"></span>
           </div>
-          <div style="text-align: left; margin-bottom: 2.5rem">
-            <h4 style="margin-bottom: 1rem; color: var(--accent)">
-              Practice insights
-            </h4>
-            <div
-              id="report-insights"
-              style="
-                font-size: 0.95rem;
-                line-height: 1.6;
-                color: var(--text-secondary);
-              "
-            >
-              Your technical depth and clarity have been analyzed. View your
-              detailed breakdown on the dashboard.
+          <h2 id="current-question" tabindex="-1"></h2>
+          <form id="interview-answer-form">
+            <label for="interview-answer">Your answer</label
+            ><textarea
+              id="interview-answer"
+              maxlength="8000"
+              placeholder="Explain your reasoning, add an example and discuss any trade-offs."
+              required=""
+              rows="8"
+            ></textarea>
+            <div class="answer-actions">
+              <small id="answer-save-state" role="status"
+                >Your answer is saved on this browser.</small
+              ><button
+                class="btn btn-primary"
+                id="evaluate-answer"
+                type="submit"
+              >
+                Get AI feedback
+              </button>
             </div>
-          </div>
-          <div style="display: flex; gap: 1rem">
+          </form>
+          <div
+            class="feedback-panel"
+            hidden=""
+            id="answer-feedback"
+            tabindex="-1"
+          ></div>
+          <details class="reference-panel">
+            <summary>Read the AI reference answer</summary>
+            <p class="preserve-text" id="reference-answer"></p>
+          </details>
+          <div class="next-question-row">
             <button
               class="btn btn-primary"
-              onclick="window.location.href='/dashboard.html'"
-              style="flex: 1"
+              hidden=""
+              id="next-question"
+              type="button"
             >
-              Explore Growth Dashboard
-            </button>
-            <button
+              Next question →</button
+            ><button
               class="btn btn-secondary"
-              onclick="window.location.reload()"
-              style="flex: 1"
+              id="leave-practice"
+              type="button"
             >
-              Next Company
+              Save &amp; return later
             </button>
           </div>
-        </div>
+        </section>
+        <section aria-label="Interview report" hidden="" id="interview-review">
+          <div class="glass-card" id="review-summary"></div>
+          <div id="review-questions"></div>
+        </section>
+        <section
+          aria-labelledby="history-heading"
+          class="history-section"
+          id="interview-history"
+        >
+          <div class="history-heading">
+            <div>
+              <span class="eyebrow">YOUR PRACTICE JOURNAL</span>
+              <h2 id="history-heading">Every answer is a step forward.</h2>
+            </div>
+            <div class="history-actions">
+              <button
+                class="btn btn-secondary"
+                id="export-interviews"
+                type="button"
+              >
+                Export all JSON</button
+              ><label
+                class="btn btn-secondary restore-label"
+                for="import-interviews"
+                >Restore backup<input
+                  accept=".json,application/json"
+                  id="import-interviews"
+                  type="file"
+              /></label>
+            </div>
+          </div>
+          <p class="interview-disclosure">
+            History is stored on this browser, including your original answers
+            and feedback. It survives app redeploys. Clearing site data, private
+            browsing or changing devices can remove access; download a JSON
+            backup to restore elsewhere. PDF reports are for reading; JSON
+            backups restore your full journal.
+          </p>
+          <div class="form-group">
+            <label for="history-search">Find a past session</label
+            ><input
+              class="form-control"
+              id="history-search"
+              placeholder="Search role, level or focus"
+              type="search"
+            />
+          </div>
+          <div aria-live="polite" id="interview-history-list"></div>
+        </section>
       </div>
-      <!-- Scripts -->
     </main>
+
     <script src="/js/api.js"></script>
     <script src="/js/ui.js"></script>
-    <script src="js/interview.js"></script>
+    <script src="/vendor/jspdf.umd.min.js"></script>
+    <script src="/js/interview-archive.js"></script>
+    <script src="/js/interview-report.js"></script>
+    <script src="/js/interview.js"></script>
   </body>
 </html>

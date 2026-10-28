@@ -6,12 +6,12 @@ const { selectAlternateModel } = require('./geminiModels');
 // Every attempt still asks Gemini for a full structured verdict; no local acceptance fallback.
 async function requestGemini(body, apiKey, primaryModel, {
     request = globalThis.fetch, wait = delay, random = Math.random, now = Date.now,
-    selectAlternate = selectAlternateModel
+    selectAlternate = selectAlternateModel, perAttemptMs = 15000, totalBudgetMs = 45000
 } = {}) {
     const alternate = process.env.GEMINI_FALLBACK_MODEL?.trim() || 'gemini-3.5-flash-lite';
     const models = [primaryModel, primaryModel];
     if (alternate !== 'none') models.push(alternate);
-    const deadline = now() + 45000;
+    const deadline = now() + totalBudgetMs;
     for (let attempt = 0; attempt < models.length; attempt++) {
         if (attempt === 2) {
             const timeout = Math.min(5000, deadline - now());
@@ -25,7 +25,7 @@ async function requestGemini(body, apiKey, primaryModel, {
             response = await request(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(models[attempt])}:generateContent`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-                signal: AbortSignal.timeout(Math.min(15000, remaining)),
+                signal: AbortSignal.timeout(Math.min(perAttemptMs, remaining)),
                 body: JSON.stringify(body)
             });
         } catch (error) {

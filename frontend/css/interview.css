@@ -1,0 +1,355 @@
+[hidden] {
+  display: none !important;
+}
+.interview-studio {
+  max-width: 1120px;
+}
+.interview-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.interview-intro h1 {
+  font-size: clamp(36px, 4vw, 54px);
+  max-width: 650px;
+}
+.interview-intro p {
+  max-width: 580px;
+  font-size: 13px;
+}
+.interview-intro > a {
+  flex-shrink: 0;
+}
+.setup-heading {
+  max-width: 640px;
+  margin-bottom: 28px;
+}
+.setup-heading h2 {
+  margin-top: 16px;
+}
+.setup-heading p {
+  font-size: 13px;
+}
+.interview-form-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+.setup-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  justify-content: space-between;
+}
+.setup-actions .form-group {
+  margin: 0;
+  flex: 1;
+}
+.setup-actions button {
+  flex: 1;
+  max-width: 300px;
+}
+.interview-disclosure {
+  font-size: 11px;
+  line-height: 1.8;
+  margin: 22px 0 0;
+  max-width: 850px;
+}
+.interview-notice {
+  font-size: 13px;
+  border-radius: 12px;
+  white-space: pre-wrap;
+}
+.interview-notice:not(:empty) {
+  padding: 14px 18px;
+  margin-bottom: 22px;
+}
+#interview-status:not(:empty) {
+  background: #ebe7dc;
+  border: 1px solid var(--rule);
+}
+.session-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.session-top .eyebrow {
+  margin: 0;
+}
+#current-question {
+  font-size: 30px;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  margin: 0 0 28px;
+}
+#interview-answer-form label {
+  display: block;
+  margin-bottom: 8px;
+}
+#interview-answer {
+  resize: vertical;
+  min-height: 190px;
+  line-height: 1.8;
+}
+.answer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 16px;
+}
+.answer-actions small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.feedback-panel {
+  background: var(--paper);
+  padding: 24px;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  margin-top: 26px;
+}
+.feedback-panel h3 {
+  font-size: 18px;
+}
+.feedback-panel p,
+.feedback-panel li {
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+.feedback-panel ul {
+  margin: 8px 0 18px;
+  padding-left: 20px;
+}
+.reference-panel {
+  border-top: 1px solid var(--rule);
+  margin-top: 24px;
+  padding-top: 18px;
+}
+.reference-panel summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  min-height: 32px;
+}
+.reference-panel p {
+  margin: 14px 0;
+  font-size: 13px;
+}
+.preserve-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.next-question-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.history-section {
+  margin-top: 64px;
+  border-top: 1px solid var(--rule);
+  padding-top: 40px;
+}
+.history-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+.history-heading h2 {
+  font-size: 32px;
+  max-width: 500px;
+}
+.history-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.history-actions .btn {
+  font-size: 11px;
+  padding: 10px 16px;
+}
+.restore-label {
+  position: relative;
+  overflow: hidden;
+}
+.restore-label input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.restore-label:focus-within {
+  outline: 3px solid #b36b00;
+  outline-offset: 4px;
+}
+.history-section > .form-group {
+  margin: 24px 0;
+}
+.history-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 14px;
+}
+.history-card h3 {
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+.history-card p {
+  font-size: 11px;
+  margin: 0;
+}
+.history-card .history-actions {
+  justify-content: flex-end;
+}
+.history-card .tag {
+  margin-bottom: 10px;
+}
+.history-empty {
+  border: 1px dashed #bcb6a6;
+  border-radius: 16px;
+  padding: 36px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.review-head {
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.review-score {
+  font-family: Georgia, serif;
+  font-size: 56px;
+  line-height: 1.1;
+}
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+.review-question {
+  margin-top: 20px;
+}
+.review-question h3 {
+  font-size: 19px;
+  line-height: 1.5;
+}
+.review-question h4 {
+  margin: 22px 0 10px;
+}
+.review-question p,
+.review-question li {
+  font-size: 13px;
+}
+.review-question ul {
+  padding-left: 20px;
+}
+.review-question .feedback-panel {
+  margin-top: 24px;
+}
+.journal-source {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 18px;
+}
+.interview-studio section {
+  scroll-margin-top: 90px;
+}
+@media (max-width: 1100px) {
+  .history-heading {
+    display: block;
+  }
+  .history-heading > .history-actions {
+    margin: 20px 0;
+  }
+  .history-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .history-card .history-actions {
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 800px) {
+  .interview-intro {
+    display: block;
+  }
+  .interview-intro > a {
+    margin-top: 12px;
+  }
+  .interview-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .setup-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .setup-actions .form-group {
+    width: 100%;
+  }
+  .setup-actions button {
+    max-width: none;
+  }
+  .session-top {
+    align-items: flex-start;
+  }
+  .session-top .eyebrow {
+    max-width: 60%;
+  }
+  #current-question {
+    font-size: 26px;
+  }
+  .answer-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .answer-actions button {
+    width: 100%;
+  }
+  .history-heading h2 {
+    font-size: 29px;
+  }
+  .history-actions {
+    gap: 8px;
+    flex-shrink: 1;
+  }
+  .history-card {
+    padding: 22px;
+  }
+  .review-head {
+    flex-direction: column;
+  }
+  .review-actions > .btn {
+    width: 100%;
+  }
+  .review-question {
+    padding: 22px;
+  }
+  .feedback-panel {
+    padding: 20px;
+  }
+  .history-section {
+    margin-top: 44px;
+  }
+  .review-score {
+    font-size: 46px;
+  }
+}
