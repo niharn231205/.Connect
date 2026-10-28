@@ -137,6 +137,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!current())
       throw Error("Your sign-in changed. Reload this page to continue.");
     const data = await response.json();
+    if (!current())
+      throw Error("Your sign-in changed. Reload this page to continue.");
     if (!response.ok)
       throw Error(
         data.message ||
@@ -251,6 +253,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (_) {
       /* Read this signed-in account's existing browser backup during outages. */
     }
+    if (!current()) return;
     cache = SavedJobs.create(
       localStorage,
       key || "connect.jobs.v1.user." + userId,

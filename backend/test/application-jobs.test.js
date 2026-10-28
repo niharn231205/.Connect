@@ -242,6 +242,11 @@ test("Google-grounded search verifies candidates and only ranks verified employe
     }
     if (stage === 2) {
       assert.deepEqual(body.tools, [{ googleSearch: {} }]);
+      assert.equal(
+        body.generationConfig,
+        undefined,
+        "grounding must also work on Search models without tool + JSON mode",
+      );
       assert.equal(input.profile.resumeText, undefined);
       value = {
         candidates: [0, 1, 2].map((n) => ({
@@ -460,4 +465,26 @@ test("browser backups survive new instances, are isolated by identity, and rejec
   bad.jobs[0].applyUrl = "javascript:alert(1)";
   assert.throws(() => SavedJobs.create(storage, "user-a").save(bad));
   assert.equal(SavedJobs.create(storage, "user-a").read().id, "set-one");
+});
+
+
+test('Search retries stay on supported grounding models and grounded text still requires employer verification', async t => {
+ const before=process.env.GEMINI_API_KEY;process.env.GEMINI_API_KEY='test';t.after(()=>before===undefined?delete process.env.GEMINI_API_KEY:process.env.GEMINI_API_KEY=before);
+ let searches=0;
+ const request=async(url,options)=>{
+  const body=JSON.parse(options.body);
+  let value;
+  if(body.tools){
+   searches++;
+   if(searches<3)return {ok:false,status:429,headers:new Headers()};
+   assert.match(url,/models\/gemini-2\.5-flash-lite:generateContent$/);
+   return {ok:true,status:200,json:async()=>({candidates:[{finishReason:'STOP',groundingMetadata:{webSearchQueries:['Python intern']},content:{parts:[{text:'Employer openings: '+[0,1,2].map(n=>job(n).applyUrl).join(' ')}]}}]})};
+  }
+  const input=JSON.parse(body.contents[0].parts[0].text);
+  value=input.candidates?{jobs:[0,1,2].map(index=>({index,whyFit:'Relevant Python skills.',requirementsToCheck:'Check requirements.'}))}:{roles:['Python intern','SQL intern'],skills:['Python'],level:'internship_entry',location:''};
+  return {ok:true,status:200,json:async()=>({candidates:[{finishReason:'STOP',content:{parts:[{text:JSON.stringify(value)}]}}]})};
+ };
+ const postingRequest=async url=>Response.json({id:Number(url.split('/').pop()),title:'Python intern',company_name:'Acme',location:{name:'Remote'},content:'Python internship for students with projects. Build software and learn with the engineering team.'});
+ const found=await searchJobs({resumeText:resume().extractedText},{request,postingRequest,wait:async()=>{}});
+ assert.equal(searches,3);assert.equal(found.jobs.length,3);assert.equal(found.jobs[0].title,'Python intern');
 });
