@@ -133,13 +133,14 @@ const matchJd = async (req, res) => {
         const userId = req.user.id;
         const user = db.findUserById(userId);
 
+        if (!user) return res.status(404).json({ message: 'Your profile could not be found. Please sign in again.' });
         if (!user.resume || !user.resume.path) {
             return res.status(400).json({ message: 'Please upload a resume first' });
         }
 
         const { jdText } = req.body;
-        if (!jdText) {
-            return res.status(400).json({ message: 'Job description text is required' });
+        if (typeof jdText !== 'string' || !jdText.trim() || jdText.length > 15000) {
+            return res.status(400).json({ message: 'Enter a job description of 1–15,000 characters.' });
         }
 
         // Write JD to temporary file to avoid shell expansion limits
