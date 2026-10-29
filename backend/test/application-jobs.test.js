@@ -493,3 +493,9 @@ test('Search retries stay on supported grounding models and grounded text still 
 test('provider rate limit is actionable and preserves previous jobs',async()=>{
  const h=harness(async()=>{throw Object.assign(Error('limited'),{code:'JOB_SEARCH_RATE_LIMITED'});});h.sets.one=saved();h.handler.start(h.request('one',{refresh:true}),reply());await h.handler.waitForIdle('one');const res=reply();h.handler.get(h.request(),res);assert.equal(res.body.saved.id,'set-one');assert.equal(res.body.error.code,'JOB_SEARCH_RATE_LIMITED');assert.match(res.body.error.message,/429/);
 });
+
+
+test('HTTP 429 with Retry-After reaches the actionable controller error without immediate retry',async t=>{
+ const before=process.env.GEMINI_API_KEY;process.env.GEMINI_API_KEY='test';t.after(()=>before===undefined?delete process.env.GEMINI_API_KEY:process.env.GEMINI_API_KEY=before);
+ let requests=0;await assert.rejects(searchJobs({resumeText:resume().extractedText},{request:async()=>{requests++;return {ok:false,status:429,headers:new Headers({'Retry-After':'30'})};}}),{code:'JOB_SEARCH_RATE_LIMITED'});assert.equal(requests,1);
+});
