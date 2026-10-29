@@ -2,7 +2,7 @@
 
 Overview and the authenticated sidebar link to `/apply-jobs.html`. The existing Role catalogue remains demonstration data; Apply for jobs searches live employer postings.
 
-Uses the existing `GEMINI_API_KEY` and `GEMINI_MODEL` (Google Search and structured-output capable model, tested with `gemini-3.5-flash-lite`). No new hosting service or secret is required. Google API usage is governed by the project's quotas and billing settings.
+Uses the existing `GEMINI_API_KEY` and `GEMINI_MODEL` (structured-output capable text model; Search uses a separate Search-capable model). `GEMINI_JOB_SEARCH_MODEL` optionally selects the grounding model (default `gemini-2.5-flash`, bounded fallback `gemini-2.5-flash-lite`). The Search call uses text output and validates candidates after retrieval, so a text-only fallback model is not mistakenly used for grounding. No new hosting service or secret is required. Google API usage is governed by the project's quotas and billing settings.
 
 ## Search and validation
 
