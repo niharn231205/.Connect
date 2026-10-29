@@ -116,7 +116,7 @@ function createApplicationJobs({
         task = {
           id: randomUUID(),
           status: "searching",
-          phase: "Preparing your job search…",
+          phase: "Preparing your job search\u2026",
           error: null,
         };
       tasks.set(user.id, task);

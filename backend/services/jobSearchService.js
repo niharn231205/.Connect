@@ -52,7 +52,7 @@ async function searchJobs(
       },
       key,
       search
-        ? process.env.GEMINI_JOB_SEARCH_MODEL?.trim() || "gemini-2.5-flash"
+        ? process.env.GEMINI_JOB_SEARCH_MODEL?.trim() || "gemini-3.5-flash-lite"
         : activeModel,
       {
         perAttemptMs: search ? 45000 : 30000,
@@ -60,7 +60,7 @@ async function searchJobs(
         // Text-generation discovery can select models without Search support.
         // Keep grounding fallbacks within Google's documented Search model set.
         ...(search
-          ? { selectAlternate: async () => "gemini-2.5-flash-lite" }
+          ? { selectAlternate: async () => "gemini-3.8-flash" }
           : {}),
         ...options,
       },
@@ -103,7 +103,7 @@ async function searchJobs(
     return { value, model, grounding: candidate.groundingMetadata };
   }
   try {
-    onProgress("Reading the skills and experience in your resume…");
+    onProgress("Reading the skills and experience in your resume\u00e2\u20ac\u00a6");
     const profileSchema = {
       type: "object",
       properties: {
@@ -147,7 +147,7 @@ async function searchJobs(
     const searchLocation =
       location.trim() || profile.location.trim() || "Any location";
     stage = "search";
-    onProgress("Searching current employer application pages…");
+    onProgress("Searching current employer application pages\u00e2\u20ac\u00a6");
     const candidateSchema = {
       type: "object",
       properties: {
@@ -169,7 +169,7 @@ async function searchJobs(
       additionalProperties: false,
     };
     const found = await generate(
-      "Perform live Google Search using at most three targeted queries to find 8–12 currently open, SPECIFIC jobs fitting this public skills/role profile and location. For entry-level profiles exclude senior, lead, staff, principal and manager roles and prioritise internships/graduate/junior openings. Search only employer application postings hosted at job-boards.greenhouse.io, boards.greenhouse.io, jobs.lever.co, jobs.eu.lever.co or jobs.ashbyhq.com. Return direct SPECIFIC posting URLs, not homepages, search results, aggregators or talent communities. Use actual search results, never guessed job IDs. Return company and URL only. Job details will be checked with the employer publishing API. Do not put any personal resume content in search queries.",
+      "Perform live Google Search using at most three targeted queries to find 8\u00e2\u20ac\u201c12 currently open, SPECIFIC jobs fitting this public skills/role profile and location. For entry-level profiles exclude senior, lead, staff, principal and manager roles and prioritise internships/graduate/junior openings. Search only employer application postings hosted at job-boards.greenhouse.io, boards.greenhouse.io, jobs.lever.co, jobs.eu.lever.co or jobs.ashbyhq.com. Return direct SPECIFIC posting URLs, not homepages, search results, aggregators or talent communities. Use actual search results, never guessed job IDs. Return company and URL only. Job details will be checked with the employer publishing API. Do not put any personal resume content in search queries.",
       { profile, searchLocation, today: new Date().toISOString().slice(0, 10) },
       candidateSchema,
       true,
@@ -187,7 +187,7 @@ async function searchJobs(
         return true;
       });
     stage = "verification";
-    onProgress("Checking that the employer postings are still published…");
+    onProgress("Checking that the employer postings are still published\u00e2\u20ac\u00a6");
     const verified = [];
     for (let start = 0; start < candidates.length; start += 4) {
       const batch = await Promise.allSettled(
@@ -212,7 +212,7 @@ async function searchJobs(
     );
     if (eligible.length < 3) throw fail("NOT_ENOUGH_VERIFIED_JOBS");
     stage = "ranking";
-    onProgress("Selecting three relevant matches for your resume…");
+    onProgress("Selecting three relevant matches for your resume\u00e2\u20ac\u00a6");
     const rankedSchema = {
       type: "object",
       properties: {

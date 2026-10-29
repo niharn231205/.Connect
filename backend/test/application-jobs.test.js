@@ -477,7 +477,7 @@ test('Search retries stay on supported grounding models and grounded text still 
   if(body.tools){
    searches++;
    if(searches<3)return {ok:false,status:429,headers:new Headers()};
-   assert.match(url,/models\/gemini-2\.5-flash-lite:generateContent$/);
+   assert.match(url,/models\/gemini-3\.8-flash:generateContent$/);
    return {ok:true,status:200,json:async()=>({candidates:[{finishReason:'STOP',groundingMetadata:{webSearchQueries:['Python intern']},content:{parts:[{text:'Employer openings: '+[0,1,2].map(n=>job(n).applyUrl).join(' ')}]}}]})};
   }
   const input=JSON.parse(body.contents[0].parts[0].text);
