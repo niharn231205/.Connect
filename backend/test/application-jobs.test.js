@@ -488,3 +488,8 @@ test('Search retries stay on supported grounding models and grounded text still 
  const found=await searchJobs({resumeText:resume().extractedText},{request,postingRequest,wait:async()=>{}});
  assert.equal(searches,3);assert.equal(found.jobs.length,3);assert.equal(found.jobs[0].title,'Python intern');
 });
+
+
+test('provider rate limit is actionable and preserves previous jobs',async()=>{
+ const h=harness(async()=>{throw Object.assign(Error('limited'),{code:'JOB_SEARCH_RATE_LIMITED'});});h.sets.one=saved();h.handler.start(h.request('one',{refresh:true}),reply());await h.handler.waitForIdle('one');const res=reply();h.handler.get(h.request(),res);assert.equal(res.body.saved.id,'set-one');assert.equal(res.body.error.code,'JOB_SEARCH_RATE_LIMITED');assert.match(res.body.error.message,/429/);
+});
