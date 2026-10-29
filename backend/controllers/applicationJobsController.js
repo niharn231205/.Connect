@@ -116,7 +116,7 @@ function createApplicationJobs({
         task = {
           id: randomUUID(),
           status: "searching",
-          phase: "Preparing your job search\u2026",
+          phase: "Preparing your job search\u00e2\u20ac\u00a6",
           error: null,
         };
       tasks.set(user.id, task);
@@ -150,13 +150,13 @@ function createApplicationJobs({
           task.phase = "";
           task.error = {
             code:
-              error.code === "NOT_ENOUGH_VERIFIED_JOBS"
+              error.code === "JOB_SEARCH_RATE_LIMITED" ? "JOB_SEARCH_RATE_LIMITED" : error.code === "NOT_ENOUGH_VERIFIED_JOBS"
                 ? "NOT_ENOUGH_VERIFIED_JOBS"
                 : error.code === "RESUME_CHANGED"
                   ? "RESUME_CHANGED"
                   : "JOB_SEARCH_UNAVAILABLE",
             message:
-              error.code === "NOT_ENOUGH_VERIFIED_JOBS"
+              error.code === "JOB_SEARCH_RATE_LIMITED" ? "Google is rate-limiting live search (HTTP 429). Wait before refreshing. If this continues, check the Gemini project Search quota in Google AI Studio. Your saved jobs are unchanged." : error.code === "NOT_ENOUGH_VERIFIED_JOBS"
                 ? "Could not confirm three suitable open jobs. Try a broader location and refresh."
                 : error.code === "RESUME_CHANGED"
                   ? "Your resume changed during the search. Refresh again to use your new resume."
