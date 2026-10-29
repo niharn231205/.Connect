@@ -33,10 +33,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("apply-phase").textContent = phase;
     $("job-results").setAttribute("aria-busy", String(value));
     $("refresh-jobs").textContent = value
-      ? "Searching…"
+      ? "Searching\u2026"
       : saved
-        ? "Refresh jobs ↻"
-        : "Find three jobs ↗";
+        ? "Refresh jobs \u21bb"
+        : "Find three jobs \u2197";
   }
   function render(value, browserOnly = false) {
     saved = value;
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       timeStyle: "short",
     });
     $("saved-date").textContent =
-      "Found " + date + " · " + value.searchLocation;
+      "Found " + date + " \u00b7 " + value.searchLocation;
     $("saved-location-note").textContent = browserOnly
       ? "Showing your browser copy. These jobs stay here until you refresh."
       : "Saved for you. These jobs stay here until you refresh.";
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       content.append(details);
       const footer = node("div", undefined, "application-footer"),
-        link = node("a", "Apply at company ↗", "btn btn-primary");
+        link = node("a", "Apply at company \u2197", "btn btn-primary");
       if (SavedJobs.safeLink(job.applyUrl)) link.href = job.applyUrl;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         `Apply for ${job.title} at ${job.company} (opens a new tab)`,
       );
       footer.append(
-        node("span", "Employer posting · " + (job.source || "ATS")),
+        node("span", "Employer posting \u00b7 " + (job.source || "ATS")),
         link,
       );
       content.append(footer);
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         "Saved for you. These jobs stay here until you refresh.";
     $("resume-change-note").hidden = !data.resumeChanged;
     if (data.status === "searching") {
-      setBusy(true, data.phase || "Searching employer pages…");
+      setBusy(true, data.phase || "Searching employer pages\u2026");
       clearTimeout(timer);
       timer = setTimeout(poll, 2500);
     } else {
@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (busy || !current()) return;
     error();
     $("apply-status").textContent = "";
-    setBusy(true, "Preparing your job search…");
+    setBusy(true, "Preparing your job search\u2026");
     try {
       consume(
         await request("/search", {
@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   $("job-location").addEventListener("input", () => {
     $("location-change-note").hidden = !saved;
   });
-  setBusy(true, "Loading your saved jobs…");
+  setBusy(true, "Loading your saved jobs\u2026");
   try {
     const userId = JSON.parse(
       atob(session.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
