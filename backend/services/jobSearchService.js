@@ -69,7 +69,7 @@ async function searchJobs(
       console.warn(
         `[job-search] stage=${stage} provider_http=${response.status}`,
       );
-      throw fail();
+      throw fail(response.status === 429 ? "JOB_SEARCH_RATE_LIMITED" : "JOB_SEARCH_UNAVAILABLE");
     }
     const body = await response.json(),
       candidate = body.candidates?.[0];
